@@ -212,7 +212,7 @@ class AppDrawerScreen extends StatelessWidget {
             mainAxisSpacing: 16,
             // Generate 100 widgets that display their index in the List.
             children: [
-              iconWidget(label: "Phone", icon: const Icon(Icons.phone), iconColor: Colors.green, context: context, ),
+              iconWidget(label: "Phone", icon: const Icon(Icons.phone), iconColor: Colors.green, context: context, onPressed: () { Navigator.pushNamed(context, "/call"); }, ),
               iconWidget(label: "Mail", icon: const Icon(Icons.mail), iconColor: Colors.blue, context: context, ),
               iconWidget(label: "Browser", icon: const Icon(Icons.language_rounded), iconColor: Colors.brown, context: context, ),
               iconWidget(label: "Compass", icon: const Icon(Icons.explore_outlined), iconColor: Colors.pink, context: context, ),

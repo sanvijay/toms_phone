@@ -14,6 +14,7 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
   bool micMuted = false;
   bool recordCall = true;
   bool outgoingCall = true;
+  String phoneNumber = "";
   late Timer timer;
 
   @override
@@ -62,6 +63,9 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
 
+    Map data = ModalRoute.of(context)?.settings.arguments as Map;
+    setState(() { outgoingCall = data['outgoingCall']; phoneNumber = data['phoneNumber']; });
+
     return Scaffold(
       body: Container(
         height: size.height,
@@ -101,7 +105,7 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  "John Deo",
+                  phoneNumber,
                   style: textTheme.headline5!.copyWith(
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
