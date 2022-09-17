@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:toms_phone/pages/call/call_logs.dart';
+import 'package:toms_phone/pages/call/contacts.dart';
 import 'package:toms_phone/pages/call/dialpad.dart';
 
 class CallScreen extends StatefulWidget {
@@ -43,7 +44,7 @@ class _CallScreenState extends State<CallScreen> {
           });
         },
       ),
-      body: currentScreen == 0 ? DialPad() : (currentScreen == 1 ? const CallLogsScreen() : SizedBox.shrink()),
+      body: currentScreen == 0 ? DialPad() : (currentScreen == 1 ? const CallLogsWidget() : const ContactsWidget()),
     );
   }
 }

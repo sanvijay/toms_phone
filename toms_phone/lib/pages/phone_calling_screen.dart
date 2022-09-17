@@ -15,6 +15,7 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
   bool recordCall = true;
   bool outgoingCall = true;
   String phoneNumber = "";
+  String? contactName;
   late Timer timer;
 
   @override
@@ -64,7 +65,7 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
     final textTheme = Theme.of(context).textTheme;
 
     Map data = ModalRoute.of(context)?.settings.arguments as Map;
-    setState(() { outgoingCall = data['outgoingCall']; phoneNumber = data['phoneNumber']; });
+    setState(() { outgoingCall = data['outgoingCall']; phoneNumber = data['phoneNumber']; contactName = data['contactName']; });
 
     return Scaffold(
       body: Container(
@@ -104,10 +105,17 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                contactName == null ? const SizedBox.shrink() : Text(
+                  contactName!,
+                  style: textTheme.headline4!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
                 Text(
                   phoneNumber,
-                  style: textTheme.headline5!.copyWith(
-                    fontWeight: FontWeight.w600,
+                  style: const TextStyle(
+                    fontSize: 20,
                     color: Colors.white,
                   ),
                 ),

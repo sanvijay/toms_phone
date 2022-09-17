@@ -12,7 +12,7 @@ class _MessageScreenState extends State<MessageScreen> {
     {
       "icon": "",
       "name": "Sandeep",
-      "lastMessage": "You there?"
+      "lastMessage": "This is a very long text I want to write to make a big paragraph but not enough so I am writing more to make it a big paragraph"
     },
     {
       "icon": "",
@@ -79,34 +79,36 @@ class _MessageScreenState extends State<MessageScreen> {
               Navigator.of(context).pushNamed('/message');
             },
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Row(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.person),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(e["name"]),
-                              const Text("2 PM")
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text(e["lastMessage"]),
-                            ],
-                          )
-                        ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Ink(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const ShapeDecoration(
+                        color: Colors.grey,
+                        shape: CircleBorder(),
                       ),
-                    ],
+                      child: const Icon(Icons.person, color: Colors.white, size: 24,),
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(e["name"], style: const TextStyle(fontWeight: FontWeight.bold),),
+                            const Text("2 PM")
+                          ],
+                        ),
+                        const SizedBox(height: 4,),
+                        Text(e["lastMessage"], maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,),
+                      ],
+                    ),
                   )
                 ],
               ),

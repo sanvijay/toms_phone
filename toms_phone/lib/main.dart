@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:toms_phone/pages/calculator_screen.dart';
 import 'package:toms_phone/pages/call_screen.dart';
+import 'package:toms_phone/pages/contacts_screen.dart';
 import 'package:toms_phone/pages/game_menu_screen.dart';
 import 'package:toms_phone/pages/message_screen.dart';
 import 'package:toms_phone/pages/message_chat_screen.dart';
@@ -9,6 +10,12 @@ import 'package:toms_phone/pages/phone_calling_screen.dart';
 import 'package:toms_phone/pages/phone_starting_screen.dart';
 import 'package:toms_phone/pages/settings_screen.dart';
 import 'package:toms_phone/pages/sudoku_screen.dart';
+
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+//   runApp(const ChatterApp());
+// }
 
 void main() => runApp(const ChatterApp());
 
@@ -20,7 +27,6 @@ class ChatterApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Tom's Phone",
-
       theme: ThemeData(
         textTheme: const TextTheme(
           bodyText1: TextStyle(
@@ -41,6 +47,7 @@ class ChatterApp extends StatelessWidget {
         '/call': (context) => const CallScreen(),
         '/sudoku': (context) => const SudokuScreen(),
         '/phone-call': (context) => const PhoneCallingScreen(),
+        '/contacts': (context) => const ContactsScreen(),
       },
     );
   }

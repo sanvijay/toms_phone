@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import "package:collection/collection.dart";
 import 'package:intl/intl.dart';
 
-class CallLogsScreen extends StatefulWidget {
-  const CallLogsScreen({Key? key}) : super(key: key);
+class CallLogsWidget extends StatefulWidget {
+  const CallLogsWidget({Key? key}) : super(key: key);
 
   @override
-  State<CallLogsScreen> createState() => _CallLogsScreenState();
+  State<CallLogsWidget> createState() => _CallLogsWidgetState();
 }
 
-class _CallLogsScreenState extends State<CallLogsScreen> {
+class _CallLogsWidgetState extends State<CallLogsWidget> {
   List<dynamic> callLogs = [
     {
       "phoneNumber": "+91 9042186832",

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:badges/badges.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -58,23 +59,24 @@ class _HomeScreenState extends State<HomeScreen> {
         bool willLeave = false;
         // show the confirm dialog
         await showDialog(
-            context: context,
-            builder: (_) => AlertDialog(
-              title: const Text('Are you sure want to leave?'),
-              actions: [
-                ElevatedButton(
-                  onPressed: () {
-                    willLeave = true;
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Yes')
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('No')
-                )
-              ],
-            ));
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Are you sure want to leave?'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  willLeave = true;
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Yes')
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('No')
+              )
+            ],
+          )
+        );
         return willLeave;
       },
       child: Container(
@@ -100,18 +102,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             "${DateFormat("h").format(now)}:${DateFormat("mm").format(now)}",
                             style: const TextStyle(
-                                fontSize: 48.0,
-                                // fontWeight: FontWeight.w500,
-                                color: Colors.white
+                              fontSize: 48.0,
+                              // fontWeight: FontWeight.w500,
+                              color: Colors.white
                             ),
                           ),
                           const SizedBox(width: 5,),
                           Text(
                             DateFormat("a").format(now),
                             style: const TextStyle(
-                                fontSize: 16.0,
-                                // fontWeight: FontWeight.w500,
-                                color: Colors.white
+                              fontSize: 16.0,
+                              // fontWeight: FontWeight.w500,
+                              color: Colors.white
                             ),
                           ),
                         ],
@@ -204,7 +206,7 @@ class AppDrawerScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.black.withOpacity(0.4),
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(0.0, 24.0, 0.0, 0.0),
+          padding: const EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
           child: GridView.count(
             // Create a grid with 2 columns. If you change the scrollDirection to
             // horizontal, this produces 2 rows.
@@ -222,7 +224,7 @@ class AppDrawerScreen extends StatelessWidget {
               iconWidget(label: "Camera", icon: const Icon(Icons.photo_camera), iconColor: Colors.redAccent, context: context, ),
               iconWidget(label: "Messages", icon: const Icon(Icons.message), iconColor: Colors.blueAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/messages"); }, ),
               iconWidget(label: "Clock", icon: const Icon(Icons.alarm), iconColor: Colors.deepPurpleAccent, context: context, ),
-              iconWidget(label: "Contacts", icon: const Icon(Icons.person), iconColor: Colors.deepOrangeAccent, context: context, ),
+              iconWidget(label: "Contacts", icon: const Icon(Icons.person), iconColor: Colors.deepOrangeAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/contacts"); }, ),
               iconWidget(label: "Calculator", icon: const Icon(Icons.calculate), iconColor: Colors.lightGreen, context: context, onPressed: () { Navigator.pushNamed(context, "/calculator"); }, ),
               iconWidget(label: "Radio", icon: const Icon(Icons.radio), iconColor: Colors.purple, context: context, ),
               iconWidget(label: "Weather", icon: const Icon(Icons.cloudy_snowing), iconColor: Colors.blueAccent, context: context, ),
@@ -282,24 +284,35 @@ Widget iconWidget({ required String label, required Icon icon, required Color ic
 
   return Column(
     children: [
-      Ink(
-        decoration: ShapeDecoration(
-          color: iconColor,
-          shape: const ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(40))),
+      Badge(
+        showBadge: true,
+        badgeContent: Text(
+          "20",
+          style: const TextStyle(
+            fontSize: 12,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        child: IconButton(
-          icon: icon,
-          iconSize: 40,
-          color: color,
-          onPressed: onPressEvent,
+        child: Ink(
+          decoration: ShapeDecoration(
+            color: iconColor,
+            shape: const ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(40))),
+          ),
+          child: IconButton(
+            icon: icon,
+            iconSize: 40,
+            color: color,
+            onPressed: onPressEvent,
+          ),
         ),
       ),
       const SizedBox(height: 5,),
       Text(
         label,
         style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white
+          fontSize: 12,
+          color: Colors.white
         ),
       ),
     ],

@@ -55,7 +55,7 @@ class _PhoneStartingScreenState extends State<PhoneStartingScreen> with TickerPr
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Phone is starting",
+                "Tom's phone is starting",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

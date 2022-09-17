@@ -38,6 +38,7 @@ dependencies:
   intl: ^0.17.0
   audioplayers: ^1.0.1
   collection: ^1.16.0
+  badges: ^2.0.3
 
 dev_dependencies:
   flutter_test:
