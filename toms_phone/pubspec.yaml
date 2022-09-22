@@ -39,6 +39,7 @@ dependencies:
   audioplayers: ^1.0.1
   collection: ^1.16.0
   badges: ^2.0.3
+  photo_view: ^0.14.0
 
 dev_dependencies:
   flutter_test:
@@ -70,7 +71,7 @@ flutter:
 #    - assets/images/phone_icon_64.png
 #    - assets/images/camera2_icon_64.png
     - assets/images/profile_image.png
-    - assets/images/drawer_icon_512.png
+#    - assets/images/drawer_icon_512.png
     - assets/sounds/call_ends.wav
     - assets/images/sudoku_icon.png
 

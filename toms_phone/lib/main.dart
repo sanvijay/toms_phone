@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:toms_phone/pages/calculator_screen.dart';
 import 'package:toms_phone/pages/call_screen.dart';
 import 'package:toms_phone/pages/contacts_screen.dart';
+import 'package:toms_phone/pages/gallery_screen.dart';
 import 'package:toms_phone/pages/game_menu_screen.dart';
 import 'package:toms_phone/pages/message_screen.dart';
 import 'package:toms_phone/pages/message_chat_screen.dart';
@@ -9,6 +10,8 @@ import 'package:toms_phone/pages/home_screen.dart';
 import 'package:toms_phone/pages/phone_calling_screen.dart';
 import 'package:toms_phone/pages/phone_starting_screen.dart';
 import 'package:toms_phone/pages/settings_screen.dart';
+import 'package:toms_phone/pages/socio_profile_screen.dart';
+import 'package:toms_phone/pages/socio_screen.dart';
 import 'package:toms_phone/pages/sudoku_screen.dart';
 
 // void main() {
@@ -40,14 +43,19 @@ class ChatterApp extends StatelessWidget {
         '/': (context) => const GameMenuScreen(),
         '/phone-starting': (context) => const PhoneStartingScreen(),
         '/home': (context) => const HomeScreen(),
-        '/messages': (context) => const MessageScreen(),
-        '/message': (context) => const MessageChatScreen(),
+        '/messages': (context) => MessageScreen(isMessenger: false,),
+        '/message': (context) => MessageChatScreen(isMessenger: false,),
         '/calculator': (context) => const CalculatorScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/call': (context) => const CallScreen(),
         '/sudoku': (context) => const SudokuScreen(),
         '/phone-call': (context) => const PhoneCallingScreen(),
         '/contacts': (context) => const ContactsScreen(),
+        '/socio': (context) => const SocioScreen(),
+        '/socio-profile': (context) => const SocioProfileScreen(),
+        '/messenger': (context) => MessageScreen(isMessenger: true,),
+        '/messenger_chat': (context) => MessageChatScreen(isMessenger: true),
+        '/gallery': (context) => GalleryScreen(),
       },
     );
   }

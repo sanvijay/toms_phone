@@ -154,37 +154,55 @@ class _HomeScreenState extends State<HomeScreen> {
             items: [
               BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.phone), iconColor: Colors.green, context: context, onPressed: () { Navigator.pushNamed(context, "/call"); }, ), label: ''),
               BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, ), label: ''),
-              // BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.apps_rounded), color: Colors.grey, iconColor: Colors.white, context: context, onPressed: () { Navigator.of(context).push(_createRoute(const AppDrawerScreen())); }, ), label: ''),
-              BottomNavigationBarItem(icon: Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 20), child: Image.asset("assets/images/drawer_icon_512.png", width: 64,),), label: ''),
+              BottomNavigationBarItem(
+                label: "",
+                icon: Column(
+                  children: [
+                    Ink(
+                      decoration: const ShapeDecoration(color: Colors.white, shape: CircleBorder(),),
+                      child: IconButton(
+                        icon: const Icon(Icons.apps_sharp),
+                        iconSize: 40,
+                        color: Colors.black,
+                        onPressed: () { Navigator.of(context).push(_createRoute(const AppDrawerScreen())); },
+                      ),
+                    ),
+                    const SizedBox(height: 5,),
+                    const Text("",),
+                  ],
+                )
+              ),
+              // BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.apps_rounded), color: Colors.black, iconColor: Colors.white, context: context, onPressed: () { Navigator.of(context).push(_createRoute(const AppDrawerScreen())); }, ), label: ''),
+              // BottomNavigationBarItem(icon: Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 20), child: Image.asset("assets/images/drawer_icon_512.png", width: 64,),), label: ''),
               BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.message), iconColor: Colors.blueAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/messages"); }, ), label: ''),
               BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.photo_camera), iconColor: Colors.redAccent, context: context, ), label: ''),
             ],
-            onTap: (index) {
-              switch(index) {
-                case 0: {
-                  Navigator.of(context).push(_createRoute(const MessageScreen()));
-                }
-                break;
-                case 1: {
-                  Navigator.of(context).push(_createRoute(const MessageScreen()));
-                }
-                break;
-                case 2: {
-                  Navigator.of(context).push(_createRoute(const AppDrawerScreen()));
-                }
-                break;
-                case 3: {
-                  Navigator.of(context).push(_createRoute(const MessageScreen()));
-                }
-                break;
-                case 4: {
-                  Navigator.of(context).push(_createRoute(const MessageScreen()));
-                }
-                break;
-                default: {}
-                break;
-              }
-            },
+            // onTap: (index) {
+            //   switch(index) {
+            //     case 0: {
+            //       // Navigator.of(context).push(_createRoute(const MessageScreen()));
+            //     }
+            //     break;
+            //     case 1: {
+            //       // Navigator.of(context).push(_createRoute(const MessageScreen()));
+            //     }
+            //     break;
+            //     case 2: {
+            //       Navigator.of(context).push(_createRoute(const AppDrawerScreen()));
+            //     }
+            //     break;
+            //     case 3: {
+            //       // Navigator.of(context).push(_createRoute(const MessageScreen()));
+            //     }
+            //     break;
+            //     case 4: {
+            //       // Navigator.of(context).push(_createRoute(const MessageScreen()));
+            //     }
+            //     break;
+            //     default: {}
+            //     break;
+            //   }
+            // },
           ),
         ),
       ),
@@ -229,8 +247,10 @@ class AppDrawerScreen extends StatelessWidget {
               iconWidget(label: "Radio", icon: const Icon(Icons.radio), iconColor: Colors.purple, context: context, ),
               iconWidget(label: "Weather", icon: const Icon(Icons.cloudy_snowing), iconColor: Colors.blueAccent, context: context, ),
               iconWidget(label: "Calendar", icon: const Icon(Icons.calendar_month), iconColor: Colors.blueGrey, context: context, ),
-              iconWidget(label: "Gallery", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, ),
+              iconWidget(label: "Gallery", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/gallery"); }, ),
               iconWidget(label: "Settings", icon: const Icon(Icons.settings), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/settings"); }, ),
+              iconWidget(label: "Socio Messenger", icon: const Icon(Icons.messenger_outline), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/messenger"); }, ),
+              iconWidget(label: "Sociogram", icon: const Icon(Icons.light), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/socio"); }, ),
               Column(
                 children: [
                   Container(

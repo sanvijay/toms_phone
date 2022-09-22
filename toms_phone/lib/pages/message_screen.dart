@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
 class MessageScreen extends StatefulWidget {
-  const MessageScreen({Key? key}) : super(key: key);
+  late bool isMessenger;
+  MessageScreen({Key? key, required this.isMessenger}) : super(key: key);
 
   @override
-  State<MessageScreen> createState() => _MessageScreenState();
+  State<MessageScreen> createState() => _MessageScreenState(isMessenger: isMessenger);
 }
 
 class _MessageScreenState extends State<MessageScreen> {
+  bool isMessenger;
+
+  _MessageScreenState({
+    required this.isMessenger
+  });
+
   List<dynamic> allMessages = [
     {
       "icon": "",
@@ -39,6 +46,7 @@ class _MessageScreenState extends State<MessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: isMessenger ? Colors.orangeAccent : Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         // iconTheme: const IconThemeData(color: Colors.deepPurple),
@@ -76,10 +84,10 @@ class _MessageScreenState extends State<MessageScreen> {
         children: allMessages.map((e) {
           return GestureDetector(
             onTap: () {
-              Navigator.of(context).pushNamed('/message');
+              Navigator.of(context).pushNamed(isMessenger ? '/messenger_chat' : '/message');
             },
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [
                   Padding(

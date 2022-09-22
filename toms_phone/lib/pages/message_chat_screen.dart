@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:toms_phone/constants/constants.dart';
 
 String username = 'User';
 String email = 'user@example.com';
 String messageText = '';
 
 class MessageChatScreen extends StatefulWidget {
-  const MessageChatScreen({Key? key}) : super(key: key);
+  late bool isMessenger;
+  MessageChatScreen({Key? key, required this.isMessenger}) : super(key: key);
 
   @override
-  _MessageChatScreenState createState() => _MessageChatScreenState();
+  _MessageChatScreenState createState() => _MessageChatScreenState(isMessenger: isMessenger);
 }
 
 class _MessageChatScreenState extends State<MessageChatScreen> {
   final chatMsgTextController = TextEditingController();
+  bool isMessenger;
+
+  _MessageChatScreenState({
+    required this.isMessenger
+  });
 
   List<dynamic> allMessages = [
     {
@@ -82,19 +87,29 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   //   }
   // }
 
-  List<Widget> chatMessages() {
-    return allMessages.map((msg) {
+  Widget chatMessages() {
+    var messageBubbles =  allMessages.map((msg) {
       return MessageBubble(
         msgText: "message text message text message text message text message text message text message text message text",
         msgSender: msg["name"],
-        user: msg["name"] == "Sandeep"
+        user: msg["name"] == "Sandeep",
+        isMessenger: isMessenger
       );
     }).toList();
+
+    return ListView(
+      reverse: true,
+      children: [
+        const SizedBox(height: 72,),
+        ...messageBubbles,
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: isMessenger ? Colors.orangeAccent : Colors.white,
       appBar: AppBar(
         // automaticallyImplyLeading: false,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -133,54 +148,65 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
         //   )
         // ],
       ),
-      body: ListView(
-        children: <Widget>[
-          ...chatMessages(),
+      body: Stack(
+        children: [
+          chatMessages(),
           Container(
-            padding: const EdgeInsets.symmetric(vertical:10,horizontal: 10),
-            decoration: kMessageContainerDecoration,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: Material(
-                    borderRadius: BorderRadius.circular(50),
-                    color: Colors.white,
-                    elevation:5,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left:8.0,top:2,bottom: 2),
-                      child: TextField(
-                        onChanged: (value) {
-                          messageText = value;
-                        },
-                        controller: chatMsgTextController,
-                        decoration: kMessageTextFieldDecoration,
+            alignment: Alignment.bottomCenter,
+            width: MediaQuery.of(context).size.width,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              width: MediaQuery.of(context).size.width,
+              color: isMessenger ? Colors.grey[700] : Colors.white,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      style: TextStyle(color: isMessenger ? Colors.white : Colors.black),
+                      decoration: const InputDecoration(
+                        hintText: "",
+                        border: InputBorder.none,
                       ),
                     ),
+                    // child: Material(
+                    //   borderRadius: BorderRadius.circular(50),
+                    //   color: Colors.white,
+                    //   elevation:5,
+                    //   child: Padding(
+                    //     padding: const EdgeInsets.only(left:8.0,top:2,bottom: 2),
+                    //     child: TextField(
+                    //       onChanged: (value) {
+                    //         messageText = value;
+                    //       },
+                    //       controller: chatMsgTextController,
+                    //       decoration: kMessageTextFieldDecoration,
+                    //     ),
+                    //   ),
+                    // ),
                   ),
-                ),
-                MaterialButton(
-                  shape: const CircleBorder(),
-                  color: Colors.blue,
-                  onPressed: () {
-                    chatMsgTextController.clear();
-                    // _firestore.collection('messages').add({
-                    //   'sender': username,
-                    //   'text': messageText,
-                    //   'timestamp':DateTime.now().millisecondsSinceEpoch,
-                    //   'senderemail': email
-                    // });
-                  },
-                  child:const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Icon(Icons.send,color: Colors.white,),
-                  )
-                  // Text(
-                  //   'Send',
-                  //   style: kSendButtonTextStyle,
-                  // ),
-                ),
-              ],
+                  MaterialButton(
+                    shape: const CircleBorder(),
+                    color: isMessenger ? Colors.redAccent : Colors.green,
+                    onPressed: () {
+                      chatMsgTextController.clear();
+                      // _firestore.collection('messages').add({
+                      //   'sender': username,
+                      //   'text': messageText,
+                      //   'timestamp':DateTime.now().millisecondsSinceEpoch,
+                      //   'senderemail': email
+                      // });
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Icon(Icons.send,color: Colors.white,),
+                    )
+                    // Text(
+                    //   'Send',
+                    //   style: kSendButtonTextStyle,
+                    // ),
+                  ),
+                ]
+              ),
             ),
           ),
         ],
@@ -233,11 +259,13 @@ class MessageBubble extends StatelessWidget {
   final String msgText;
   final String msgSender;
   final bool user;
+  final bool isMessenger;
 
   MessageBubble({
     required this.msgText,
     required this.msgSender,
-    required this.user
+    required this.user,
+    required this.isMessenger
   });
 
   @override
@@ -248,30 +276,33 @@ class MessageBubble extends StatelessWidget {
         crossAxisAlignment:
         user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              msgSender,
-              style: const TextStyle(
-                  fontSize: 13, fontFamily: 'Poppins', color: Colors.black87),
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.symmetric(horizontal: 10),
+          //   child: Text(
+          //     msgSender,
+          //     style: const TextStyle(
+          //       fontSize: 13,
+          //       color: Colors.black87,
+          //       fontWeight: FontWeight.bold,
+          //     ),
+          //   ),
+          // ),
+          const Text("11:03 PM"),
           Material(
             borderRadius: BorderRadius.only(
-              bottomLeft: const Radius.circular(50),
-              topLeft: user ? const Radius.circular(50) : const Radius.circular(0),
-              bottomRight: const Radius.circular(50),
-              topRight: user ? const Radius.circular(0) : const Radius.circular(50),
+              bottomLeft: Radius.circular(isMessenger ? 40 : 12),
+              topLeft: user ? Radius.circular(isMessenger ? 40 : 12) : const Radius.circular(0),
+              bottomRight: Radius.circular(isMessenger ? 40 : 12),
+              topRight: user ? const Radius.circular(0) : Radius.circular(isMessenger ? 40 : 12),
             ),
-            color: user ? Colors.blue : Colors.white,
-            elevation: 5,
+            color: user ? Colors.lightGreen : Colors.grey[400],
+            elevation: isMessenger ? 4 : 0,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Text(
                 msgText,
                 style: TextStyle(
-                  color: user ? Colors.white : Colors.blue,
-                  fontFamily: 'Poppins',
+                  color: user ? Colors.white : Colors.black,
                   fontSize: 15,
                 ),
               ),
