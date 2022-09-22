@@ -1,7 +1,5 @@
-/**
- * Author: Shahbaj Jamil
- *profile: https://github.com/shahbajjamil
- */
+/// Author: Shahbaj Jamil
+///profile: https://github.com/shahbajjamil
 
 import 'package:flutter/material.dart';
 import 'package:toms_phone/pages/gallery/preview_image.dart';
@@ -12,7 +10,7 @@ class GalleryScreen extends StatefulWidget {
 }
 
 class _GalleryScreenState extends State<GalleryScreen> {
-  final List_Item = [
+  final List galleryItems = [
     {
       'pic': 'assets/images/wallpaper.png',
     },
@@ -23,42 +21,40 @@ class _GalleryScreenState extends State<GalleryScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Gallery'),
+        title: const Text('Gallery'),
       ),
-      body: Container(
-        child: GridView.builder(
-          itemCount: List_Item.length,
-          gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
-          itemBuilder: (BuildContext context, int i) {
-            return Product(product_image: List_Item[i]['pic']);
-          },
-        ),
+      body: GridView.builder(
+        itemCount: galleryItems.length,
+        gridDelegate:
+        const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        itemBuilder: (BuildContext context, int i) {
+          return Product(productImage: galleryItems[i]['pic']);
+        },
       ),
     );
   }
 }
 
 class Product extends StatelessWidget {
-  final product_image;
+  final String productImage;
 
-  Product({this.product_image});
+  Product({required this.productImage});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Hero(
-        tag: product_image,
+        tag: productImage,
         child: Material(
           child: InkWell(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) =>
-                      PreviewImage(picDetails_view: product_image)));
+                      PreviewImage(picDetails_view: productImage)));
             },
             child: GridTile(
               child: Image.asset(
-                product_image,
+                productImage,
                 fit: BoxFit.cover,
               ),
             ),

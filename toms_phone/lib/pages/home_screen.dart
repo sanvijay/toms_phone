@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
             currentIndex: 0,
             items: [
               BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.phone), iconColor: Colors.green, context: context, onPressed: () { Navigator.pushNamed(context, "/call"); }, ), label: ''),
-              BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, ), label: ''),
+              BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/gallery"); }, ), label: ''),
               BottomNavigationBarItem(
                 label: "",
                 icon: Column(
@@ -241,12 +241,12 @@ class AppDrawerScreen extends StatelessWidget {
               iconWidget(label: "My files", icon: const Icon(Icons.folder), iconColor: Colors.orangeAccent, context: context, ),
               iconWidget(label: "Camera", icon: const Icon(Icons.photo_camera), iconColor: Colors.redAccent, context: context, ),
               iconWidget(label: "Messages", icon: const Icon(Icons.message), iconColor: Colors.blueAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/messages"); }, ),
-              iconWidget(label: "Clock", icon: const Icon(Icons.alarm), iconColor: Colors.deepPurpleAccent, context: context, ),
+              iconWidget(label: "Clock", icon: const Icon(Icons.alarm), iconColor: Colors.deepPurpleAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/clock"); }, ),
               iconWidget(label: "Contacts", icon: const Icon(Icons.person), iconColor: Colors.deepOrangeAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/contacts"); }, ),
               iconWidget(label: "Calculator", icon: const Icon(Icons.calculate), iconColor: Colors.lightGreen, context: context, onPressed: () { Navigator.pushNamed(context, "/calculator"); }, ),
               iconWidget(label: "Radio", icon: const Icon(Icons.radio), iconColor: Colors.purple, context: context, ),
               iconWidget(label: "Weather", icon: const Icon(Icons.cloudy_snowing), iconColor: Colors.blueAccent, context: context, ),
-              iconWidget(label: "Calendar", icon: const Icon(Icons.calendar_month), iconColor: Colors.blueGrey, context: context, ),
+              iconWidget(label: "Calendar", icon: const Icon(Icons.calendar_month), iconColor: Colors.blueGrey, context: context, onPressed: () { Navigator.pushNamed(context, "/calendar"); }, ),
               iconWidget(label: "Gallery", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/gallery"); }, ),
               iconWidget(label: "Settings", icon: const Icon(Icons.settings), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/settings"); }, ),
               iconWidget(label: "Socio Messenger", icon: const Icon(Icons.messenger_outline), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/messenger"); }, ),

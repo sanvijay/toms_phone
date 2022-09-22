@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:toms_phone/pages/calculator_screen.dart';
+import 'package:toms_phone/pages/calendar_screen.dart';
 import 'package:toms_phone/pages/call_screen.dart';
+import 'package:toms_phone/pages/clock_screen.dart';
 import 'package:toms_phone/pages/contacts_screen.dart';
 import 'package:toms_phone/pages/gallery_screen.dart';
 import 'package:toms_phone/pages/game_menu_screen.dart';
@@ -56,6 +58,8 @@ class ChatterApp extends StatelessWidget {
         '/messenger': (context) => MessageScreen(isMessenger: true,),
         '/messenger_chat': (context) => MessageChatScreen(isMessenger: true),
         '/gallery': (context) => GalleryScreen(),
+        '/calendar': (context) => CalendarScreen(),
+        '/clock': (context) => ClockScreen(),
       },
     );
   }

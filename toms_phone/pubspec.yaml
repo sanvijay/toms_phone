@@ -40,6 +40,7 @@ dependencies:
   collection: ^1.16.0
   badges: ^2.0.3
   photo_view: ^0.14.0
+  table_calendar: ^3.0.7
 
 dev_dependencies:
   flutter_test:
