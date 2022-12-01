@@ -2,9 +2,30 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class GameMenuScreen extends StatelessWidget {
+import 'package:toms_phone/library/game_runner.dart';
+
+class GameMenuScreen extends StatefulWidget {
   const GameMenuScreen({Key? key}) : super(key: key);
+
+  @override
+  State<GameMenuScreen> createState() => _GameMenuScreenState();
+}
+
+class _GameMenuScreenState extends State<GameMenuScreen> {
+  @override
+  void initState() {
+    () async {
+      var prefs = await SharedPreferences.getInstance();
+      prefs.setBool('inGame', false);
+    }();
+
+    Future.delayed(Duration.zero,() {
+      GameRunner(context);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

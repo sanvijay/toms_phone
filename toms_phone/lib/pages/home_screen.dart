@@ -3,7 +3,10 @@ import 'package:badges/badges.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:toms_phone/pages/message_screen.dart';
+import 'package:isar/isar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:toms_phone/models/notification.model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,12 +22,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    timer = Timer.periodic(const Duration(minutes: 1,), (Timer t) => checkForNewTime());
+    setInGame();
+
+    timer = Timer.periodic(const Duration(seconds: 5,), (Timer t) => checkForNewTime());
+  }
+
+  void setInGame() async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setBool('inGame', true);
   }
 
   void checkForNewTime() {
     setState(() {
       now = DateTime.now();
+      setState(() {});
     });
   }
 
@@ -64,8 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
             title: const Text('Are you sure want to leave?'),
             actions: [
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   willLeave = true;
+                  var prefs = await SharedPreferences.getInstance();
+                  prefs.setBool('inGame', false);
                   Navigator.of(context).pop();
                 },
                 child: const Text('Yes')
@@ -152,8 +165,8 @@ class _HomeScreenState extends State<HomeScreen> {
             type: BottomNavigationBarType.fixed,
             currentIndex: 0,
             items: [
-              BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.phone), iconColor: Colors.green, context: context, onPressed: () { Navigator.pushNamed(context, "/call"); }, ), label: ''),
-              BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/gallery"); }, ), label: ''),
+              BottomNavigationBarItem(icon: iconWidget(key: "", label: "", icon: const Icon(Icons.phone), iconColor: Colors.green, context: context, onPressed: () { Navigator.pushNamed(context, "/call"); }, ), label: ''),
+              BottomNavigationBarItem(icon: iconWidget(key: "", label: "", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/gallery"); }, ), label: ''),
               BottomNavigationBarItem(
                 label: "",
                 icon: Column(
@@ -174,8 +187,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               // BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.apps_rounded), color: Colors.black, iconColor: Colors.white, context: context, onPressed: () { Navigator.of(context).push(_createRoute(const AppDrawerScreen())); }, ), label: ''),
               // BottomNavigationBarItem(icon: Padding(padding: const EdgeInsets.fromLTRB(0, 0, 0, 20), child: Image.asset("assets/images/drawer_icon_512.png", width: 64,),), label: ''),
-              BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.message), iconColor: Colors.blueAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/messages"); }, ), label: ''),
-              BottomNavigationBarItem(icon: iconWidget(label: "", icon: const Icon(Icons.photo_camera), iconColor: Colors.redAccent, context: context, ), label: ''),
+              BottomNavigationBarItem(icon: iconWidget(key: "Messages", label: "", icon: const Icon(Icons.message), iconColor: Colors.blueAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/messages"); }, ), label: ''),
+              BottomNavigationBarItem(icon: iconWidget(key: "", label: "", icon: const Icon(Icons.photo_camera), iconColor: Colors.redAccent, context: context, ), label: ''),
             ],
             // onTap: (index) {
             //   switch(index) {
@@ -210,8 +223,34 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class AppDrawerScreen extends StatelessWidget {
+class AppDrawerScreen extends StatefulWidget {
   const AppDrawerScreen({Key? key}) : super(key: key);
+
+  @override
+  State<AppDrawerScreen> createState() => _AppDrawerScreenState();
+}
+
+class _AppDrawerScreenState extends State<AppDrawerScreen> {
+  late Timer timer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    timer = Timer.periodic(const Duration(seconds: 1,), (Timer t) => checkForNewTime());
+  }
+
+  void checkForNewTime() {
+    setState(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -232,25 +271,25 @@ class AppDrawerScreen extends StatelessWidget {
             mainAxisSpacing: 16,
             // Generate 100 widgets that display their index in the List.
             children: [
-              iconWidget(label: "Phone", icon: const Icon(Icons.phone), iconColor: Colors.green, context: context, onPressed: () { Navigator.pushNamed(context, "/call"); }, ),
-              iconWidget(label: "Mail", icon: const Icon(Icons.mail), iconColor: Colors.blue, context: context, ),
-              iconWidget(label: "Browser", icon: const Icon(Icons.language_rounded), iconColor: Colors.brown, context: context, ),
-              iconWidget(label: "Compass", icon: const Icon(Icons.explore_outlined), iconColor: Colors.pink, context: context, ),
-              iconWidget(label: "Maps", icon: const Icon(Icons.fmd_good_rounded), iconColor: Colors.amber, context: context, ),
-              iconWidget(label: "Audio Player", icon: const Icon(Icons.headphones_rounded), iconColor: Colors.indigo, context: context, ),
-              iconWidget(label: "My files", icon: const Icon(Icons.folder), iconColor: Colors.orangeAccent, context: context, ),
-              iconWidget(label: "Camera", icon: const Icon(Icons.photo_camera), iconColor: Colors.redAccent, context: context, ),
-              iconWidget(label: "Messages", icon: const Icon(Icons.message), iconColor: Colors.blueAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/messages"); }, ),
-              iconWidget(label: "Clock", icon: const Icon(Icons.alarm), iconColor: Colors.deepPurpleAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/clock"); }, ),
-              iconWidget(label: "Contacts", icon: const Icon(Icons.person), iconColor: Colors.deepOrangeAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/contacts"); }, ),
-              iconWidget(label: "Calculator", icon: const Icon(Icons.calculate), iconColor: Colors.lightGreen, context: context, onPressed: () { Navigator.pushNamed(context, "/calculator"); }, ),
-              iconWidget(label: "Radio", icon: const Icon(Icons.radio), iconColor: Colors.purple, context: context, ),
-              iconWidget(label: "Weather", icon: const Icon(Icons.cloudy_snowing), iconColor: Colors.blueAccent, context: context, ),
-              iconWidget(label: "Calendar", icon: const Icon(Icons.calendar_month), iconColor: Colors.blueGrey, context: context, onPressed: () { Navigator.pushNamed(context, "/calendar"); }, ),
-              iconWidget(label: "Gallery", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/gallery"); }, ),
-              iconWidget(label: "Settings", icon: const Icon(Icons.settings), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/settings"); }, ),
-              iconWidget(label: "Socio Messenger", icon: const Icon(Icons.messenger_outline), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/messenger"); }, ),
-              iconWidget(label: "Sociogram", icon: const Icon(Icons.light), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/socio"); }, ),
+              iconWidget(key: "Phone", label: "Phone", icon: const Icon(Icons.phone), iconColor: Colors.green, context: context, onPressed: () { Navigator.pushNamed(context, "/call"); }, ),
+              iconWidget(key: "Mail", label: "Mail", icon: const Icon(Icons.mail), iconColor: Colors.blue, context: context, ),
+              iconWidget(key: "Browser", label: "Browser", icon: const Icon(Icons.language_rounded), iconColor: Colors.brown, context: context, ),
+              iconWidget(key: "Compass", label: "Compass", icon: const Icon(Icons.explore_outlined), iconColor: Colors.pink, context: context, ),
+              iconWidget(key: "Maps", label: "Maps", icon: const Icon(Icons.fmd_good_rounded), iconColor: Colors.amber, context: context, ),
+              iconWidget(key: "Audio Player", label: "Audio Player", icon: const Icon(Icons.headphones_rounded), iconColor: Colors.indigo, context: context, ),
+              iconWidget(key: "My files", label: "My files", icon: const Icon(Icons.folder), iconColor: Colors.orangeAccent, context: context, ),
+              iconWidget(key: "Camera", label: "Camera", icon: const Icon(Icons.photo_camera), iconColor: Colors.redAccent, context: context, ),
+              iconWidget(key: "Messages", label: "Messages", icon: const Icon(Icons.message), iconColor: Colors.blueAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/messages"); }, ),
+              iconWidget(key: "Clock", label: "Clock", icon: const Icon(Icons.alarm), iconColor: Colors.deepPurpleAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/clock"); }, ),
+              iconWidget(key: "Contacts", label: "Contacts", icon: const Icon(Icons.person), iconColor: Colors.deepOrangeAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/contacts"); }, ),
+              iconWidget(key: "Calculator", label: "Calculator", icon: const Icon(Icons.calculate), iconColor: Colors.lightGreen, context: context, onPressed: () { Navigator.pushNamed(context, "/calculator"); }, ),
+              iconWidget(key: "Radio", label: "Radio", icon: const Icon(Icons.radio), iconColor: Colors.purple, context: context, ),
+              iconWidget(key: "Weather", label: "Weather", icon: const Icon(Icons.cloudy_snowing), iconColor: Colors.blueAccent, context: context, ),
+              iconWidget(key: "Calendar", label: "Calendar", icon: const Icon(Icons.calendar_month), iconColor: Colors.blueGrey, context: context, onPressed: () { Navigator.pushNamed(context, "/calendar"); }, ),
+              iconWidget(key: "Gallery", label: "Gallery", icon: const Icon(Icons.photo), iconColor: Colors.pinkAccent, context: context, onPressed: () { Navigator.pushNamed(context, "/gallery"); }, ),
+              iconWidget(key: "Settings", label: "Settings", icon: const Icon(Icons.settings), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/settings"); }, ),
+              iconWidget(key: "Socio Messenger", label: "Socio Messenger", icon: const Icon(Icons.messenger_outline), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/messenger"); }, ),
+              iconWidget(key: "Sociogram", label: "Sociogram", icon: const Icon(Icons.light), iconColor: Colors.grey, context: context, onPressed: () { Navigator.pushNamed(context, "/socio"); }, ),
               Column(
                 children: [
                   Container(
@@ -283,7 +322,7 @@ class AppDrawerScreen extends StatelessWidget {
   }
 }
 
-Widget iconWidget({ required String label, required Icon icon, required Color iconColor, VoidCallback? onPressed, required BuildContext context, color = Colors.white }) {
+Widget iconWidget({ required String key, required String label, required Icon icon, required Color iconColor, VoidCallback? onPressed, required BuildContext context, color = Colors.white }) {
   VoidCallback onPressEvent = onPressed ?? () => showDialog<String>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
@@ -302,30 +341,41 @@ Widget iconWidget({ required String label, required Icon icon, required Color ic
     ),
   );
 
+  Future<int> notificationCount() async {
+    Isar isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema]);
+
+    return isar.notificationModels.filter().objectEqualTo(key).count();
+  }
+
   return Column(
     children: [
-      Badge(
-        showBadge: true,
-        badgeContent: Text(
-          "20",
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        child: Ink(
-          decoration: ShapeDecoration(
-            color: iconColor,
-            shape: const ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(40))),
-          ),
-          child: IconButton(
-            icon: icon,
-            iconSize: 40,
-            color: color,
-            onPressed: onPressEvent,
-          ),
-        ),
+      FutureBuilder(
+        future: notificationCount(),
+        builder: (BuildContext context, AsyncSnapshot<int> text) {
+          return Badge(
+            showBadge: text.data != 0,
+            badgeContent: Text(
+              text.data.toString(),
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            child: Ink(
+              decoration: ShapeDecoration(
+                color: iconColor,
+                shape: const ContinuousRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(40))),
+              ),
+              child: IconButton(
+                icon: icon,
+                iconSize: 40,
+                color: color,
+                onPressed: onPressEvent,
+              ),
+            ),
+          );
+        }
       ),
       const SizedBox(height: 5,),
       Text(
