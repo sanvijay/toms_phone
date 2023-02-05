@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:toms_phone/libraries/game_data.dart';
 
 class PhoneStartingScreen extends StatefulWidget {
   const PhoneStartingScreen({Key? key}) : super(key: key);
@@ -27,6 +28,7 @@ class _PhoneStartingScreenState extends State<PhoneStartingScreen> with TickerPr
 
   startTime() async {
     var duration = const Duration(seconds: 5);
+    await GameData().initializeNotification();
     return Timer(duration, route);
   }
 

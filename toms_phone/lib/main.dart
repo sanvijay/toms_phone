@@ -3,6 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
+
+import 'package:toms_phone/constants/game_constants.dart';
+import 'package:toms_phone/libraries/game_logic.dart';
+import 'package:toms_phone/models/message.model.dart';
 import 'package:toms_phone/models/notification.model.dart';
 
 import 'package:toms_phone/pages/calculator_screen.dart';
@@ -48,6 +53,8 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
 
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+
     WidgetsBinding.instance.addObserver(this);
     workOnNotification();
   }
@@ -61,29 +68,29 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
   workOnNotification() async {
     await assignIsarObject();
 
-    timer = Timer.periodic(const Duration(seconds: 4), (Timer t) async {
+    timer = Timer.periodic(const Duration(seconds: pollingTimeInSecs), (Timer t) async {
       var prefs = await SharedPreferences.getInstance();
-      _isInGame = prefs.getBool('inGame') ?? false;
-      print("IsInForeground: $_isInForeground isInGame: $_isInGame");
+      _isInGame = prefs.getBool(inGamePref) ?? false;
+      int runTime = prefs.getInt(gameRunTimePref) ?? 0;
+
+      int notificationCount = isar.notificationModels.countSync();
+
+      print("IsInForeground: $_isInForeground isInGame: $_isInGame gameRunTime: $runTime notificationCount: $notificationCount");
       if (_isInForeground && _isInGame) {
-        // await insertNotification();
+        GameLogic().executeGameLogic();
+        prefs.setInt(gameRunTimePref, runTime + pollingTimeInSecs);
       }
     });
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema]);
-  }
-
-  insertNotification() async {
-    await isar.writeTxn(() async {
-      final notification = NotificationModel(object: (['Messages', 'Radio', 'Clock']..shuffle()).first, objectId: 1, read: false);
-      await isar.collection<NotificationModel>().put(notification);
-    });
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema]);
   }
 
   @override
   void dispose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+
     WidgetsBinding.instance.removeObserver(this);
     timer?.cancel();
     super.dispose();

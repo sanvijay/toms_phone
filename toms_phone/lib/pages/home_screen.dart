@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toms_phone/models/message.model.dart';
 
 import 'package:toms_phone/models/notification.model.dart';
 
@@ -342,9 +343,9 @@ Widget iconWidget({ required String key, required String label, required Icon ic
   );
 
   Future<int> notificationCount() async {
-    Isar isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema]);
+    Isar isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema]);
 
-    return isar.notificationModels.filter().objectEqualTo(key).count();
+    return isar.notificationModels.filter().objectEqualTo(key).pushedAtIsNotNull().readEqualTo(false).count();
   }
 
   return Column(

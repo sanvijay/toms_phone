@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toms_phone/libraries/game_data.dart';
 
-import 'package:toms_phone/library/game_runner.dart';
+import 'package:toms_phone/libraries/notification_watcher.dart';
+import 'package:toms_phone/constants/game_constants.dart';
 
 class GameMenuScreen extends StatefulWidget {
   const GameMenuScreen({Key? key}) : super(key: key);
@@ -18,11 +20,11 @@ class _GameMenuScreenState extends State<GameMenuScreen> {
   void initState() {
     () async {
       var prefs = await SharedPreferences.getInstance();
-      prefs.setBool('inGame', false);
+      prefs.setBool(inGamePref, false);
     }();
 
     Future.delayed(Duration.zero,() {
-      GameRunner(context);
+      NotificationWatcher(context);
     });
     super.initState();
   }
@@ -68,7 +70,9 @@ class _GameMenuScreenState extends State<GameMenuScreen> {
                   subtitle: "Continue the game where you left",
                 ),
                 SettingsItem(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.of(context).push(_createRoute(const GameSettingsScreen()));
+                  },
                   icons: Icons.settings,
                   iconStyle: IconStyle(
                     iconsColor: Colors.white,
@@ -84,7 +88,7 @@ class _GameMenuScreenState extends State<GameMenuScreen> {
               items: [
                 SettingsItem(
                   onTap: () {
-                    Navigator.of(context).push(_createRoute());
+                    Navigator.of(context).push(_createRoute(const CreditsScreen()));
                   },
                   icons: Icons.info_rounded,
                   iconStyle: IconStyle(
@@ -183,7 +187,7 @@ class CreditsScreen extends StatelessWidget {
               items: [
                 SettingsItem(
                   onTap: () {
-                    Navigator.of(context).push(_createRoute());
+                    Navigator.of(context).push(_createRoute(const CreditsScreen()));
                   },
                   icons: Icons.info_rounded,
                   iconStyle: IconStyle(
@@ -221,9 +225,100 @@ class CreditsScreen extends StatelessWidget {
   }
 }
 
-Route _createRoute() {
+class GameSettingsScreen extends StatelessWidget {
+  const GameSettingsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
+        backgroundColor: Colors.white10,
+        title: const Text(
+          'Settings',
+          style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 16,
+              color: Colors.black
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: ListView(
+          children: [
+            SettingsGroup(
+              items: [
+                SettingsItem(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Your data will be lost. Are you sure you want to reset your game?'),
+                          actions: [
+                            ElevatedButton(
+                                onPressed: () async {
+                                  await GameData().deleteAllData();
+
+                                  var prefs = await SharedPreferences.getInstance();
+                                  prefs.setInt(gameRunTimePref, 0);
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Yes')
+                            ),
+                            TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('No')
+                            )
+                          ],
+                        );
+                      }
+                    );
+                  },
+                  icons: Icons.dark_mode_rounded,
+                  iconStyle: IconStyle(
+                    iconsColor: Colors.white,
+                    withBackground: true,
+                    backgroundColor: Colors.red,
+                  ),
+                  title: 'Factory Reset',
+                  subtitle: "Delete all your data",
+                ),
+                // SettingsItem(
+                //   onTap: () {},
+                //   icons: Icons.dark_mode_rounded,
+                //   iconStyle: IconStyle(
+                //     iconsColor: Colors.white,
+                //     withBackground: true,
+                //     backgroundColor: Colors.red,
+                //   ),
+                //   title: 'Dark mode',
+                //   subtitle: "Automatic",
+                //   trailing: Switch.adaptive(
+                //     value: false,
+                //     onChanged: (value) {},
+                //   ),
+                // ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Route _createRoute(Widget screen) {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => const CreditsScreen(),
+    pageBuilder: (context, animation, secondaryAnimation) => screen,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const begin = Offset(1.0, 0.0);
       const end = Offset.zero;
