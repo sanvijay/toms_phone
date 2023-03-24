@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 
-import 'package:toms_phone/models/notification.model.dart';
+import 'package:toms_phone/models/user.model.dart';
 
 part 'message.model.g.dart';
 
@@ -8,21 +8,23 @@ part 'message.model.g.dart';
 class MessageModel {
   MessageModel({
     required this.text,
-    required this.created,
-    required this.messageType
+    required this.createdAt,
+    required this.messageType,
+    required this.incoming
   });
 
   Id? id;
 
   final String text;
+  final DateTime createdAt;
+  final bool incoming;
 
   @enumerated // same as EnumType.ordinal
   final MessageType messageType;
 
+  final chatWith = IsarLink<UserModel>();
   bool read = false;
   bool delivered = false;
-
-  final DateTime created;
 }
 
 enum MessageType {

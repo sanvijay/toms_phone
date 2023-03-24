@@ -17,9 +17,9 @@ const MessageModelSchema = CollectionSchema(
   name: r'MessageModel',
   id: -902762555029995869,
   properties: {
-    r'created': PropertySchema(
+    r'createdAt': PropertySchema(
       id: 0,
-      name: r'created',
+      name: r'createdAt',
       type: IsarType.dateTime,
     ),
     r'delivered': PropertySchema(
@@ -27,19 +27,24 @@ const MessageModelSchema = CollectionSchema(
       name: r'delivered',
       type: IsarType.bool,
     ),
-    r'messageType': PropertySchema(
+    r'incoming': PropertySchema(
       id: 2,
+      name: r'incoming',
+      type: IsarType.bool,
+    ),
+    r'messageType': PropertySchema(
+      id: 3,
       name: r'messageType',
       type: IsarType.byte,
       enumMap: _MessageModelmessageTypeEnumValueMap,
     ),
     r'read': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'read',
       type: IsarType.bool,
     ),
     r'text': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'text',
       type: IsarType.string,
     )
@@ -50,7 +55,14 @@ const MessageModelSchema = CollectionSchema(
   deserializeProp: _messageModelDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {},
+  links: {
+    r'chatWith': LinkSchema(
+      id: -8181202265239375707,
+      name: r'chatWith',
+      target: r'UserModel',
+      single: true,
+    )
+  },
   embeddedSchemas: {},
   getId: _messageModelGetId,
   getLinks: _messageModelGetLinks,
@@ -74,11 +86,12 @@ void _messageModelSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.created);
+  writer.writeDateTime(offsets[0], object.createdAt);
   writer.writeBool(offsets[1], object.delivered);
-  writer.writeByte(offsets[2], object.messageType.index);
-  writer.writeBool(offsets[3], object.read);
-  writer.writeString(offsets[4], object.text);
+  writer.writeBool(offsets[2], object.incoming);
+  writer.writeByte(offsets[3], object.messageType.index);
+  writer.writeBool(offsets[4], object.read);
+  writer.writeString(offsets[5], object.text);
 }
 
 MessageModel _messageModelDeserialize(
@@ -88,15 +101,16 @@ MessageModel _messageModelDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = MessageModel(
-    created: reader.readDateTime(offsets[0]),
+    createdAt: reader.readDateTime(offsets[0]),
+    incoming: reader.readBool(offsets[2]),
     messageType: _MessageModelmessageTypeValueEnumMap[
-            reader.readByteOrNull(offsets[2])] ??
+            reader.readByteOrNull(offsets[3])] ??
         MessageType.message,
-    text: reader.readString(offsets[4]),
+    text: reader.readString(offsets[5]),
   );
   object.delivered = reader.readBool(offsets[1]);
   object.id = id;
-  object.read = reader.readBool(offsets[3]);
+  object.read = reader.readBool(offsets[4]);
   return object;
 }
 
@@ -112,12 +126,14 @@ P _messageModelDeserializeProp<P>(
     case 1:
       return (reader.readBool(offset)) as P;
     case 2:
+      return (reader.readBool(offset)) as P;
+    case 3:
       return (_MessageModelmessageTypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           MessageType.message) as P;
-    case 3:
-      return (reader.readBool(offset)) as P;
     case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -138,12 +154,14 @@ Id _messageModelGetId(MessageModel object) {
 }
 
 List<IsarLinkBase<dynamic>> _messageModelGetLinks(MessageModel object) {
-  return [];
+  return [object.chatWith];
 }
 
 void _messageModelAttach(
     IsarCollection<dynamic> col, Id id, MessageModel object) {
   object.id = id;
+  object.chatWith
+      .attach(col, col.isar.collection<UserModel>(), r'chatWith', id);
 }
 
 extension MessageModelQueryWhereSort
@@ -228,45 +246,45 @@ extension MessageModelQueryWhere
 extension MessageModelQueryFilter
     on QueryBuilder<MessageModel, MessageModel, QFilterCondition> {
   QueryBuilder<MessageModel, MessageModel, QAfterFilterCondition>
-      createdEqualTo(DateTime value) {
+      createdAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'created',
+        property: r'createdAt',
         value: value,
       ));
     });
   }
 
   QueryBuilder<MessageModel, MessageModel, QAfterFilterCondition>
-      createdGreaterThan(
+      createdAtGreaterThan(
     DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'created',
+        property: r'createdAt',
         value: value,
       ));
     });
   }
 
   QueryBuilder<MessageModel, MessageModel, QAfterFilterCondition>
-      createdLessThan(
+      createdAtLessThan(
     DateTime value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'created',
+        property: r'createdAt',
         value: value,
       ));
     });
   }
 
   QueryBuilder<MessageModel, MessageModel, QAfterFilterCondition>
-      createdBetween(
+      createdAtBetween(
     DateTime lower,
     DateTime upper, {
     bool includeLower = true,
@@ -274,7 +292,7 @@ extension MessageModelQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'created',
+        property: r'createdAt',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -359,6 +377,16 @@ extension MessageModelQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<MessageModel, MessageModel, QAfterFilterCondition>
+      incomingEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'incoming',
+        value: value,
       ));
     });
   }
@@ -568,19 +596,33 @@ extension MessageModelQueryObject
     on QueryBuilder<MessageModel, MessageModel, QFilterCondition> {}
 
 extension MessageModelQueryLinks
-    on QueryBuilder<MessageModel, MessageModel, QFilterCondition> {}
-
-extension MessageModelQuerySortBy
-    on QueryBuilder<MessageModel, MessageModel, QSortBy> {
-  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> sortByCreated() {
+    on QueryBuilder<MessageModel, MessageModel, QFilterCondition> {
+  QueryBuilder<MessageModel, MessageModel, QAfterFilterCondition> chatWith(
+      FilterQuery<UserModel> q) {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'created', Sort.asc);
+      return query.link(q, r'chatWith');
     });
   }
 
-  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> sortByCreatedDesc() {
+  QueryBuilder<MessageModel, MessageModel, QAfterFilterCondition>
+      chatWithIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'created', Sort.desc);
+      return query.linkLength(r'chatWith', 0, true, 0, true);
+    });
+  }
+}
+
+extension MessageModelQuerySortBy
+    on QueryBuilder<MessageModel, MessageModel, QSortBy> {
+  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> sortByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> sortByCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
@@ -593,6 +635,18 @@ extension MessageModelQuerySortBy
   QueryBuilder<MessageModel, MessageModel, QAfterSortBy> sortByDeliveredDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'delivered', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> sortByIncoming() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'incoming', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> sortByIncomingDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'incoming', Sort.desc);
     });
   }
 
@@ -636,15 +690,15 @@ extension MessageModelQuerySortBy
 
 extension MessageModelQuerySortThenBy
     on QueryBuilder<MessageModel, MessageModel, QSortThenBy> {
-  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> thenByCreated() {
+  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'created', Sort.asc);
+      return query.addSortBy(r'createdAt', Sort.asc);
     });
   }
 
-  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> thenByCreatedDesc() {
+  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> thenByCreatedAtDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'created', Sort.desc);
+      return query.addSortBy(r'createdAt', Sort.desc);
     });
   }
 
@@ -669,6 +723,18 @@ extension MessageModelQuerySortThenBy
   QueryBuilder<MessageModel, MessageModel, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> thenByIncoming() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'incoming', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MessageModel, MessageModel, QAfterSortBy> thenByIncomingDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'incoming', Sort.desc);
     });
   }
 
@@ -712,15 +778,21 @@ extension MessageModelQuerySortThenBy
 
 extension MessageModelQueryWhereDistinct
     on QueryBuilder<MessageModel, MessageModel, QDistinct> {
-  QueryBuilder<MessageModel, MessageModel, QDistinct> distinctByCreated() {
+  QueryBuilder<MessageModel, MessageModel, QDistinct> distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'created');
+      return query.addDistinctBy(r'createdAt');
     });
   }
 
   QueryBuilder<MessageModel, MessageModel, QDistinct> distinctByDelivered() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'delivered');
+    });
+  }
+
+  QueryBuilder<MessageModel, MessageModel, QDistinct> distinctByIncoming() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'incoming');
     });
   }
 
@@ -752,15 +824,21 @@ extension MessageModelQueryProperty
     });
   }
 
-  QueryBuilder<MessageModel, DateTime, QQueryOperations> createdProperty() {
+  QueryBuilder<MessageModel, DateTime, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'created');
+      return query.addPropertyName(r'createdAt');
     });
   }
 
   QueryBuilder<MessageModel, bool, QQueryOperations> deliveredProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'delivered');
+    });
+  }
+
+  QueryBuilder<MessageModel, bool, QQueryOperations> incomingProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'incoming');
     });
   }
 

@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
+import 'package:toms_phone/models/user.model.dart';
+
+import '../models/message.model.dart';
+import '../models/notification.model.dart';
+
+import 'package:timeago/timeago.dart' as timeago;
 
 class MessageScreen extends StatefulWidget {
-  late bool isMessenger;
-  MessageScreen({Key? key, required this.isMessenger}) : super(key: key);
+  final bool isMessenger;
+  const MessageScreen({Key? key, required this.isMessenger}) : super(key: key);
 
   @override
   State<MessageScreen> createState() => _MessageScreenState(isMessenger: isMessenger);
@@ -10,38 +17,34 @@ class MessageScreen extends StatefulWidget {
 
 class _MessageScreenState extends State<MessageScreen> {
   bool isMessenger;
+  late Isar isar;
+
+  List<dynamic> allMessages = [];
 
   _MessageScreenState({
     required this.isMessenger
   });
 
-  List<dynamic> allMessages = [
-    {
-      "icon": "",
-      "name": "Sandeep",
-      "lastMessage": "This is a very long text I want to write to make a big paragraph but not enough so I am writing more to make it a big paragraph"
-    },
-    {
-      "icon": "",
-      "name": "Avyukth",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Reethika",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Ishanvi",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Sruthi",
-      "lastMessage": "You there?"
-    },
-  ];
+  void setMessagesFromDB() async {
+    await assignIsarObject();
+    allMessages = await isar.messageModels
+        .filter()
+        .messageTypeEqualTo(isMessenger ? MessageType.socioMessage : MessageType.message)
+        .findAll();
+
+    setState(() { });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    setMessagesFromDB();
+  }
+
+  assignIsarObject() async {
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -109,12 +112,13 @@ class _MessageScreenState extends State<MessageScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(e["name"], style: const TextStyle(fontWeight: FontWeight.bold),),
-                            const Text("2 PM")
+                            Text(e.chatWith.value.contactName ?? e.chatWith.value.phoneNumber, style: const TextStyle(fontWeight: FontWeight.bold),),
+                            // const Text("2 PM")
+                            Text(timeago.format(e.chatWith.value.createdAt))
                           ],
                         ),
                         const SizedBox(height: 4,),
-                        Text(e["lastMessage"], maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,),
+                        Text(e.text, maxLines: 2, overflow: TextOverflow.ellipsis, textAlign: TextAlign.left,),
                       ],
                     ),
                   )

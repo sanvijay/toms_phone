@@ -9,6 +9,7 @@ import 'package:toms_phone/constants/game_constants.dart';
 import 'package:toms_phone/libraries/game_logic.dart';
 import 'package:toms_phone/models/message.model.dart';
 import 'package:toms_phone/models/notification.model.dart';
+import 'package:toms_phone/models/user.model.dart';
 
 import 'package:toms_phone/pages/calculator_screen.dart';
 import 'package:toms_phone/pages/calendar_screen.dart';
@@ -84,7 +85,7 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema]);
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
   }
 
   @override
@@ -114,8 +115,8 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
         '/': (context) => const GameMenuScreen(),
         '/phone-starting': (context) => const PhoneStartingScreen(),
         '/home': (context) => const HomeScreen(),
-        '/messages': (context) => MessageScreen(isMessenger: false,),
-        '/message': (context) => MessageChatScreen(isMessenger: false,),
+        '/messages': (context) => const MessageScreen(isMessenger: false,),
+        '/message': (context) => MessageChatScreen(isMessenger: false),
         '/calculator': (context) => const CalculatorScreen(),
         '/settings': (context) => const SettingsScreen(),
         '/call': (context) => const CallScreen(),
@@ -124,7 +125,7 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
         '/contacts': (context) => const ContactsScreen(),
         '/socio': (context) => const SocioScreen(),
         '/socio-profile': (context) => const SocioProfileScreen(),
-        '/messenger': (context) => MessageScreen(isMessenger: true,),
+        '/messenger': (context) => const MessageScreen(isMessenger: true,),
         '/messenger_chat': (context) => MessageChatScreen(isMessenger: true),
         '/gallery': (context) => GalleryScreen(),
         '/calendar': (context) => CalendarScreen(),

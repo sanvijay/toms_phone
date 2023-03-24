@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import "package:collection/collection.dart";
+import 'package:isar/isar.dart';
 import 'dart:math' as math;
+
+import '../../models/user.model.dart';
 
 class ContactsWidget extends StatefulWidget {
   const ContactsWidget({Key? key}) : super(key: key);
@@ -10,7 +13,31 @@ class ContactsWidget extends StatefulWidget {
 }
 
 class _ContactsWidgetState extends State<ContactsWidget> {
-  List<dynamic> contactList = [
+  late Isar isar;
+  List<UserModel> contactList = [];
+
+  void setMessagesFromDB() async {
+    await assignIsarObject();
+    contactList = await isar.userModels
+        .filter()
+        .contactNameIsNotEmpty()
+        .findAll();
+
+    setState(() { });
+  }
+
+  assignIsarObject() async {
+    isar = Isar.getInstance("default") ?? await Isar.open([UserModelSchema]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    setMessagesFromDB();
+  }
+
+  List<dynamic> contactList2 = [
     {
       "phoneNumber": "+91 9042186832",
       "contactName": "Sandeep",
@@ -130,9 +157,9 @@ class _ContactsWidgetState extends State<ContactsWidget> {
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, "/phone-call", arguments: { 'outgoingCall': true, 'phoneNumber': log["phoneNumber"], "contactName": log["contactName"] });
+                      Navigator.pushNamed(context, "/phone-call", arguments: { 'outgoingCall': true, 'phoneNumber': log.phoneNumber, "contactName": log.contactName });
                     },
-                    child: Text(log["contactName"].toString()),
+                    child: Text(log.contactName.toString()),
                   ),
                 ),
                 PopupMenuButton<String>(

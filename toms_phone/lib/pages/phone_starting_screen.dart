@@ -28,7 +28,7 @@ class _PhoneStartingScreenState extends State<PhoneStartingScreen> with TickerPr
 
   startTime() async {
     var duration = const Duration(seconds: 5);
-    await GameData().initializeNotification();
+    await GameData().initializeAllData();
     return Timer(duration, route);
   }
 

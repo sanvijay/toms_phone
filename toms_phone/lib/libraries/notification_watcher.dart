@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:toms_phone/models/message.model.dart';
 import 'package:toms_phone/models/notification.model.dart';
+import 'package:toms_phone/models/user.model.dart';
 
 class NotificationWatcher {
   late Isar isar;
@@ -17,7 +18,7 @@ class NotificationWatcher {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema]);
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
   }
 
   void watchNotification() async {
