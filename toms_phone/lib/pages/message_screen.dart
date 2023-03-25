@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:toms_phone/models/user.model.dart';
@@ -19,17 +20,18 @@ class _MessageScreenState extends State<MessageScreen> {
   bool isMessenger;
   late Isar isar;
 
-  List<dynamic> allMessages = [];
+  List<MessageModel> allMessages = [];
 
   _MessageScreenState({
     required this.isMessenger
   });
 
-  void setMessagesFromDB() async {
+  void setDataFromDB() async {
     await assignIsarObject();
     allMessages = await isar.messageModels
         .filter()
         .messageTypeEqualTo(isMessenger ? MessageType.socioMessage : MessageType.message)
+        .sortByCreatedAt()
         .findAll();
 
     setState(() { });
@@ -39,11 +41,17 @@ class _MessageScreenState extends State<MessageScreen> {
   void initState() {
     super.initState();
 
-    setMessagesFromDB();
+    setDataFromDB();
   }
 
   assignIsarObject() async {
     isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
+  }
+
+  List<MessageModel> findLatestMessage() {
+    Map<String, MessageModel> lastMessagesMap = Map<String, MessageModel>.fromIterable(allMessages, key: (item) => item.chatWith.value?.phoneNumber, value: (item) => item);
+
+    return lastMessagesMap.values.sortedBy((e) => e.createdAt).reversed.toList();
   }
 
   @override
@@ -84,10 +92,10 @@ class _MessageScreenState extends State<MessageScreen> {
         ),
       ),
       body: ListView(
-        children: allMessages.map((e) {
+        children: findLatestMessage().map((e) {
           return GestureDetector(
             onTap: () {
-              Navigator.of(context).pushNamed(isMessenger ? '/messenger_chat' : '/message');
+              Navigator.of(context).pushNamed(isMessenger ? '/messenger_chat' : '/message', arguments: { 'phoneNumber': e.chatWith.value?.phoneNumber });
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -112,9 +120,9 @@ class _MessageScreenState extends State<MessageScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(e.chatWith.value.contactName ?? e.chatWith.value.phoneNumber, style: const TextStyle(fontWeight: FontWeight.bold),),
+                            Text(e.chatWith.value?.contactName ?? e.chatWith.value?.phoneNumber ?? '', style: const TextStyle(fontWeight: FontWeight.bold),),
                             // const Text("2 PM")
-                            Text(timeago.format(e.chatWith.value.createdAt))
+                            Text(timeago.format(e.createdAt))
                           ],
                         ),
                         const SizedBox(height: 4,),

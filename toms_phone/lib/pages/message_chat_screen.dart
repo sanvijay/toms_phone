@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
+
+import '../models/message.model.dart';
+import '../models/notification.model.dart';
+import '../models/user.model.dart';
 
 String username = 'User';
 String email = 'user@example.com';
@@ -14,64 +20,23 @@ class MessageChatScreen extends StatefulWidget {
 
 class _MessageChatScreenState extends State<MessageChatScreen> {
   final chatMsgTextController = TextEditingController();
-  bool isMessenger;
+  final bool isMessenger;
+  String? phoneNumber;
+  late Isar isar;
 
   _MessageChatScreenState({
     required this.isMessenger
   });
 
-  List<dynamic> allMessages = [
-    {
-      "icon": "",
-      "name": "Sandeep",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Avyukth",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Reethika",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Ishanvi",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Sruthi",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Sruthi",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Sruthi",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Sruthi",
-      "lastMessage": "You there?"
-    },
-    {
-      "icon": "",
-      "name": "Sruthi",
-      "lastMessage": "You there?"
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
+    assignIsarObject();
     // getMessages();
+  }
+
+  assignIsarObject() async {
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
   }
 
   // void getMessages()async{
@@ -87,12 +52,18 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   //   }
   // }
 
+  String chatWithName() {
+    UserModel? user = phoneNumber == null ? null : isar.userModels.filter().phoneNumberEqualTo(phoneNumber!).findFirstSync();
+
+    return user == null ? '' : user.contactName ?? user.phoneNumber;
+  }
+
   Widget chatMessages() {
-    var messageBubbles =  allMessages.map((msg) {
+    List<dynamic> allMessages = phoneNumber == null ? [] : isar.messageModels.filter().chatWith((q) => q.phoneNumberEqualTo(phoneNumber!)).findAllSync();
+
+    var messageBubbles = phoneNumber == null ? [] : allMessages.map((msg) {
       return MessageBubble(
-        msgText: "message text message text message text message text message text message text message text message text",
-        msgSender: msg["name"],
-        user: msg["name"] == "Sandeep",
+        msg: msg,
         isMessenger: isMessenger
       );
     }).toList();
@@ -108,6 +79,9 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Map data = ModalRoute.of(context)?.settings.arguments as Map;
+    setState(() { phoneNumber = data['phoneNumber']; });
+
     return Scaffold(
       backgroundColor: isMessenger ? Colors.orangeAccent : Colors.white,
       appBar: AppBar(
@@ -134,12 +108,12 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
         //   padding: const EdgeInsets.all(12.0),
         //   child: CircleAvatar(backgroundImage: NetworkImage('https://cdn.clipart.email/93ce84c4f719bd9a234fb92ab331bec4_frisco-specialty-clinic-vail-health_480-480.png'),),
         // ),
-        title: const Text(
-          'Sandeep',
+        title: Text(
+          chatWithName(),
           style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 16,
-              color: Colors.black
+            fontFamily: 'Poppins',
+            fontSize: 16,
+            color: Colors.black
           ),
         ),
         // actions: <Widget>[
@@ -215,56 +189,12 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   }
 }
 
-// class ChatStream extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return StreamBuilder(
-//       stream: _firestore.collection('messages').orderBy('timestamp').snapshots(),
-//       builder: (context, snapshot) {
-//         if (snapshot.hasData) {
-//           final messages = snapshot.data.documents.reversed;
-//           List<MessageBubble> messageWidgets = [];
-//           for (var message in messages) {
-//             final msgText = message.data['text'];
-//             final msgSender = message.data['sender'];
-//             // final msgSenderEmail = message.data['senderemail'];
-//             final currentUser = "Tom"; // TODO: Change this later
-//
-//             // print('MSG'+msgSender + '  CURR'+currentUser);
-//             final msgBubble = MessageBubble(
-//                 msgText: msgText,
-//                 msgSender: msgSender,
-//                 user: currentUser == msgSender);
-//             messageWidgets.add(msgBubble);
-//           }
-//           return Expanded(
-//             child: ListView(
-//               reverse: true,
-//               padding: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
-//               children: messageWidgets,
-//             ),
-//           );
-//         } else {
-//           return Center(
-//             child:
-//             CircularProgressIndicator(backgroundColor: Colors.deepPurple),
-//           );
-//         }
-//       },
-//     );
-//   }
-// }
-
 class MessageBubble extends StatelessWidget {
-  final String msgText;
-  final String msgSender;
-  final bool user;
   final bool isMessenger;
+  final MessageModel msg;
 
   MessageBubble({
-    required this.msgText,
-    required this.msgSender,
-    required this.user,
+    required this.msg,
     required this.isMessenger
   });
 
@@ -274,35 +204,27 @@ class MessageBubble extends StatelessWidget {
       padding: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment:
-        user ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        !msg.incoming ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: <Widget>[
-          // Container(
-          //   padding: const EdgeInsets.symmetric(horizontal: 10),
-          //   child: Text(
-          //     msgSender,
-          //     style: const TextStyle(
-          //       fontSize: 13,
-          //       color: Colors.black87,
-          //       fontWeight: FontWeight.bold,
-          //     ),
-          //   ),
-          // ),
-          const Text("11:03 PM"),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
+            child: Text(DateFormat("MMMM d h:mm a").format(msg.createdAt)),
+          ),
           Material(
             borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(isMessenger ? 40 : 12),
-              topLeft: user ? Radius.circular(isMessenger ? 40 : 12) : const Radius.circular(0),
+              topLeft: !msg.incoming ? Radius.circular(isMessenger ? 40 : 12) : const Radius.circular(0),
               bottomRight: Radius.circular(isMessenger ? 40 : 12),
-              topRight: user ? const Radius.circular(0) : Radius.circular(isMessenger ? 40 : 12),
+              topRight: !msg.incoming ? const Radius.circular(0) : Radius.circular(isMessenger ? 40 : 12),
             ),
-            color: user ? Colors.lightGreen : Colors.grey[400],
+            color: !msg.incoming ? Colors.lightGreen : Colors.grey[400],
             elevation: isMessenger ? 4 : 0,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
               child: Text(
-                msgText,
+                msg.text,
                 style: TextStyle(
-                  color: user ? Colors.white : Colors.black,
+                  color: !msg.incoming ? Colors.white : Colors.black,
                   fontSize: 15,
                 ),
               ),

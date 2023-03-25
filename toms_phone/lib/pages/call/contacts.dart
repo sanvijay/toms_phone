@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:collection/collection.dart";
 import 'package:isar/isar.dart';
+import 'package:toms_phone/models/message.model.dart';
+import 'package:toms_phone/models/notification.model.dart';
 import 'dart:math' as math;
 
 import '../../models/user.model.dart';
@@ -27,7 +29,7 @@ class _ContactsWidgetState extends State<ContactsWidget> {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([UserModelSchema]);
+    isar = Isar.getInstance("default") ?? await Isar.open([UserModelSchema, NotificationModelSchema, MessageModelSchema]);
   }
 
   @override
@@ -36,77 +38,6 @@ class _ContactsWidgetState extends State<ContactsWidget> {
 
     setMessagesFromDB();
   }
-
-  List<dynamic> contactList2 = [
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sandeep",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Sruthi",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Ishanvi",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Reethika",
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "contactName": "Avyukth",
-    },
-  ];
 
   void somethingWentWrong() {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -125,7 +56,7 @@ class _ContactsWidgetState extends State<ContactsWidget> {
 
   Widget groupContacts() {
     var groupedContacts = groupBy(contactList, (obj) {
-      return (obj as Map)["contactName"][0];
+      return (obj as UserModel).contactName![0];
     });
 
     List<Widget> logWidgets = [];
