@@ -1,6 +1,7 @@
 library game_runner;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
 import 'package:toms_phone/models/message.model.dart';
 import 'package:toms_phone/models/notification.model.dart';
@@ -41,6 +42,8 @@ class NotificationWatcher {
   }
 
   showSnackBar(String appName) {
+    SystemSound.play(SystemSoundType.alert);
+
     ScaffoldMessenger.of(_context).showSnackBar(
       SnackBar(
         backgroundColor: Colors.red,

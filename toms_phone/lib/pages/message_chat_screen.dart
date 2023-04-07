@@ -59,9 +59,16 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   }
 
   Widget chatMessages() {
-    List<dynamic> allMessages = phoneNumber == null ? [] : isar.messageModels.filter().chatWith((q) => q.phoneNumberEqualTo(phoneNumber!)).findAllSync();
+    List<dynamic> allMessages = phoneNumber == null ? [] : isar.messageModels.filter().chatWith((q) => q.phoneNumberEqualTo(phoneNumber!)).sortByCreatedAtDesc().findAllSync();
 
     var messageBubbles = phoneNumber == null ? [] : allMessages.map((msg) {
+      isar.writeTxn(() async {
+        if (!msg.read) {
+          msg.read = true;
+          isar.messageModels.put(msg);
+        }
+      });
+
       return MessageBubble(
         msg: msg,
         isMessenger: isMessenger

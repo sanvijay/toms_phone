@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toms_phone/models/message.model.dart';
@@ -18,6 +19,10 @@ class GameData {
   deleteAllData() async {
     await assignIsarObject();
 
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setInt(gameRunTimePref, 0);
+    prefs.setBool(gameStartedBoolPref, false);
+
     await isar.writeTxn(() async {
       isar.userModels.filter().phoneNumberIsNotEmpty().deleteAll();
       isar.notificationModels.filter().objectIsNotEmpty().deleteAll();
@@ -29,6 +34,9 @@ class GameData {
     await initializeUser();
     await initializeNotification();
     await initializeMessage();
+
+    var prefs = await SharedPreferences.getInstance();
+    prefs.setBool(gameStartedBoolPref, true);
   }
 
   initializeMessage() async {
@@ -65,6 +73,7 @@ class GameData {
 
       for (var notification in initialNotificationData()) {
         await isar.notificationModels.put(notification);
+        await notification.messageChatWith.save();
       }
     });
   }
@@ -105,21 +114,23 @@ class GameData {
 
   List<NotificationModel> initialNotificationData() {
     return [
-      NotificationModel(id: 1, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'I am trying to call you for a long time',
-      NotificationModel(id: 2, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'Where are you both?',
-      NotificationModel(id: 3, object: 'Message', canPushKey: 'firstMessages')..messageContent = "Don't try to fool around",
-      NotificationModel(id: 4, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'Call me back soon!',
-      NotificationModel(id: 5, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'I am going to call the police.',
+      NotificationModel(id: 1, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'I am trying to call you for a long time'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(id: 2, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'Where are you both?'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(id: 3, object: 'Message', canPushKey: 'firstMessages')..messageContent = "Don't try to fool around"..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(id: 4, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'Call me back soon!'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(id: 5, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'I am going to call the police.'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
     ];
   }
 
   List<MessageModel> initialMessageData() {
     return [
-      MessageModel(text: 'Message', createdAt: DateTime.now(), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['unknown']!,
-      MessageModel(text: 'Message', createdAt: DateTime.now(), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['unknown']!,
-      MessageModel(text: 'Message', createdAt: DateTime.now(), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['edgar']!,
-      MessageModel(text: 'Message', createdAt: DateTime.now(), incoming: false, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['edgar']!,
-      MessageModel(text: 'Message', createdAt: DateTime.now(), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['edgar']!,
+      MessageModel(text: 'Your a/c no. xxxx2468 is credited by \$10,000.00 Avl. Bal: \$10,329.00', createdAt: DateTime.now().subtract(const Duration(days: 40)), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['cityBank']!..read = true,
+      MessageModel(text: 'Dear Customer, \$10,000 is debited from A/c xxxx2468. Call 4321 if not done by you.', createdAt: DateTime.now().subtract(const Duration(days: 39)), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['cityBank']!..read = true,
+      MessageModel(text: 'Recharge of \$10.00 is successful for your ABCnet number 143-92837465. Dial 192, to know your current balance, validity, plan details and for exciting recharge plans.', createdAt: DateTime.now().subtract(const Duration(days: 100)), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['abcNet']!..read = true,
+      MessageModel(text: 'Plan expired! Recharge now with \$20.00 get exciting prizes.', createdAt: DateTime.now().subtract(const Duration(days: 82)), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['abcNet']!..read = true,
+      MessageModel(text: 'Recharge of \$10.00 is successful for your ABCnet number 143-92837465. Dial 192, to know your current balance, validity, plan details and for exciting recharge plans.', createdAt: DateTime.now().subtract(const Duration(days: 78)), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['abcNet']!..read = true,
+      MessageModel(text: 'Recharge of \$10.00 is successful for your ABCnet number 143-92837465. Dial 192, to know your current balance, validity, plan details and for exciting recharge plans.', createdAt: DateTime.now().subtract(const Duration(days: 42)), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['abcNet']!..read = true,
+      MessageModel(text: 'Dear Customer, You have 13 missed call. The last missed call was at 09:58 PM on ${DateFormat('MMM d').format(DateTime.now().subtract(const Duration(days: 1)))}. Thank you, Team ABCNet', createdAt: DateTime.now().subtract(const Duration(days: 1)), incoming: true, messageType: MessageType.message)..delivered = true..chatWith.value = userMap()['edgar']!..read = true,
     ];
   }
 
@@ -127,7 +138,8 @@ class GameData {
     if (_userMap != null) return _userMap!;
 
     _userMap = {
-      'unknown': isar.userModels.filter().phoneNumberEqualTo('123456789').findFirstSync()!,
+      'cityBank': isar.userModels.filter().phoneNumberEqualTo('City Bank').findFirstSync()!,
+      'abcNet': isar.userModels.filter().phoneNumberEqualTo('ABC-Net').findFirstSync()!,
       'edgar': isar.userModels.filter().phoneNumberEqualTo('987654321').findFirstSync()!,
     };
 
@@ -136,7 +148,9 @@ class GameData {
 
   List<UserModel> initialUserData() {
     return [
-      UserModel(phoneNumber: '123456789', createdAt: DateTime.now()),
+      UserModel(phoneNumber: 'City Bank', createdAt: DateTime.now()),
+      UserModel(phoneNumber: 'ABC-Net', createdAt: DateTime.now()),
+      UserModel(phoneNumber: '987654321', createdAt: DateTime.now())..contactName = 'Edgar',
       UserModel(phoneNumber: '987654321', createdAt: DateTime.now())..contactName = 'Edgar',
     ];
   }

@@ -268,8 +268,6 @@ class GameSettingsScreen extends StatelessWidget {
                                 onPressed: () async {
                                   await GameData().deleteAllData();
 
-                                  var prefs = await SharedPreferences.getInstance();
-                                  prefs.setInt(gameRunTimePref, 0);
                                   Navigator.of(context).pop();
                                 },
                                 child: const Text('Yes')

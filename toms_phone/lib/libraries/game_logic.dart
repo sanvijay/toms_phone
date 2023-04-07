@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:isar/isar.dart';
 import 'package:toms_phone/libraries/game_data.dart';
 import 'package:toms_phone/models/message.model.dart';
@@ -20,19 +19,31 @@ class GameLogic {
         .pushedAtIsNull()
         .findAll();
 
-    List<NotificationModel> toUpdateElements = [];
-
     for (var element in result) {
       bool canPush = await GameData().canPush(element);
 
       if (canPush && element.pushedAt == null) {
         element.pushedAt = DateTime.now();
-        toUpdateElements.add(element);
-      }
+        MessageModel? msgMdl;
 
-      await isar.writeTxn(() async {
-        await isar.notificationModels.putAll(toUpdateElements);
-      });
+        if (element.object == 'Message') {
+          msgMdl = MessageModel(text: element.messageContent!,
+              createdAt: element.messageCreatedAt ?? DateTime.now(),
+              messageType: MessageType.message,
+              incoming: element.messageIncoming!)
+            ..delivered = true
+            ..chatWith.value = element.messageChatWith.value!;
+        }
+
+        await isar.writeTxn(() async {
+          await isar.notificationModels.put(element);
+
+          if (element.object == 'Message') {
+            await isar.messageModels.put(msgMdl!);
+            msgMdl.chatWith.save();
+          }
+        });
+      }
     }
   }
 }

@@ -32,18 +32,28 @@ const NotificationModelSchema = CollectionSchema(
       name: r'messageContent',
       type: IsarType.string,
     ),
-    r'object': PropertySchema(
+    r'messageCreatedAt': PropertySchema(
       id: 3,
+      name: r'messageCreatedAt',
+      type: IsarType.dateTime,
+    ),
+    r'messageIncoming': PropertySchema(
+      id: 4,
+      name: r'messageIncoming',
+      type: IsarType.bool,
+    ),
+    r'object': PropertySchema(
+      id: 5,
       name: r'object',
       type: IsarType.string,
     ),
     r'pushedAt': PropertySchema(
-      id: 4,
+      id: 6,
       name: r'pushedAt',
       type: IsarType.dateTime,
     ),
     r'read': PropertySchema(
-      id: 5,
+      id: 7,
       name: r'read',
       type: IsarType.bool,
     )
@@ -59,6 +69,12 @@ const NotificationModelSchema = CollectionSchema(
       id: 8855960654964917451,
       name: r'message',
       target: r'MessageModel',
+      single: true,
+    ),
+    r'messageChatWith': LinkSchema(
+      id: 8228881580365590834,
+      name: r'messageChatWith',
+      target: r'UserModel',
       single: true,
     )
   },
@@ -95,9 +111,11 @@ void _notificationModelSerialize(
   writer.writeString(offsets[0], object.canPushKey);
   writer.writeDateTime(offsets[1], object.created);
   writer.writeString(offsets[2], object.messageContent);
-  writer.writeString(offsets[3], object.object);
-  writer.writeDateTime(offsets[4], object.pushedAt);
-  writer.writeBool(offsets[5], object.read);
+  writer.writeDateTime(offsets[3], object.messageCreatedAt);
+  writer.writeBool(offsets[4], object.messageIncoming);
+  writer.writeString(offsets[5], object.object);
+  writer.writeDateTime(offsets[6], object.pushedAt);
+  writer.writeBool(offsets[7], object.read);
 }
 
 NotificationModel _notificationModelDeserialize(
@@ -109,11 +127,13 @@ NotificationModel _notificationModelDeserialize(
   final object = NotificationModel(
     canPushKey: reader.readString(offsets[0]),
     id: id,
-    object: reader.readString(offsets[3]),
+    object: reader.readString(offsets[5]),
   );
   object.messageContent = reader.readStringOrNull(offsets[2]);
-  object.pushedAt = reader.readDateTimeOrNull(offsets[4]);
-  object.read = reader.readBool(offsets[5]);
+  object.messageCreatedAt = reader.readDateTimeOrNull(offsets[3]);
+  object.messageIncoming = reader.readBoolOrNull(offsets[4]);
+  object.pushedAt = reader.readDateTimeOrNull(offsets[6]);
+  object.read = reader.readBool(offsets[7]);
   return object;
 }
 
@@ -131,10 +151,14 @@ P _notificationModelDeserializeProp<P>(
     case 2:
       return (reader.readStringOrNull(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
-    case 4:
       return (reader.readDateTimeOrNull(offset)) as P;
+    case 4:
+      return (reader.readBoolOrNull(offset)) as P;
     case 5:
+      return (reader.readString(offset)) as P;
+    case 6:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 7:
       return (reader.readBool(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -147,13 +171,15 @@ Id _notificationModelGetId(NotificationModel object) {
 
 List<IsarLinkBase<dynamic>> _notificationModelGetLinks(
     NotificationModel object) {
-  return [object.message];
+  return [object.message, object.messageChatWith];
 }
 
 void _notificationModelAttach(
     IsarCollection<dynamic> col, Id id, NotificationModel object) {
   object.message
       .attach(col, col.isar.collection<MessageModel>(), r'message', id);
+  object.messageChatWith
+      .attach(col, col.isar.collection<UserModel>(), r'messageChatWith', id);
 }
 
 extension NotificationModelQueryWhereSort
@@ -641,6 +667,108 @@ extension NotificationModelQueryFilter
   }
 
   QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageCreatedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'messageCreatedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageCreatedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'messageCreatedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageCreatedAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'messageCreatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageCreatedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'messageCreatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageCreatedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'messageCreatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageCreatedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'messageCreatedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageIncomingIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'messageIncoming',
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageIncomingIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'messageIncoming',
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageIncomingEqualTo(bool? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'messageIncoming',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
       objectEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -879,6 +1007,20 @@ extension NotificationModelQueryLinks
       return query.linkLength(r'message', 0, true, 0, true);
     });
   }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageChatWith(FilterQuery<UserModel> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'messageChatWith');
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      messageChatWithIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'messageChatWith', 0, true, 0, true);
+    });
+  }
 }
 
 extension NotificationModelQuerySortBy
@@ -922,6 +1064,34 @@ extension NotificationModelQuerySortBy
       sortByMessageContentDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'messageContent', Sort.desc);
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
+      sortByMessageCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageCreatedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
+      sortByMessageCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageCreatedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
+      sortByMessageIncoming() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageIncoming', Sort.asc);
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
+      sortByMessageIncomingDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageIncoming', Sort.desc);
     });
   }
 
@@ -1026,6 +1196,34 @@ extension NotificationModelQuerySortThenBy
   }
 
   QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
+      thenByMessageCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageCreatedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
+      thenByMessageCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageCreatedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
+      thenByMessageIncoming() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageIncoming', Sort.asc);
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
+      thenByMessageIncomingDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'messageIncoming', Sort.desc);
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterSortBy>
       thenByObject() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'object', Sort.asc);
@@ -1093,6 +1291,20 @@ extension NotificationModelQueryWhereDistinct
   }
 
   QueryBuilder<NotificationModel, NotificationModel, QDistinct>
+      distinctByMessageCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'messageCreatedAt');
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QDistinct>
+      distinctByMessageIncoming() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'messageIncoming');
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QDistinct>
       distinctByObject({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'object', caseSensitive: caseSensitive);
@@ -1140,6 +1352,20 @@ extension NotificationModelQueryProperty
       messageContentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'messageContent');
+    });
+  }
+
+  QueryBuilder<NotificationModel, DateTime?, QQueryOperations>
+      messageCreatedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'messageCreatedAt');
+    });
+  }
+
+  QueryBuilder<NotificationModel, bool?, QQueryOperations>
+      messageIncomingProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'messageIncoming');
     });
   }
 

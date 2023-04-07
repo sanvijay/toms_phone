@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toms_phone/models/message.model.dart';
 
 import 'package:toms_phone/models/notification.model.dart';
+import 'package:toms_phone/models/user.model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -343,7 +344,11 @@ Widget iconWidget({ required String key, required String label, required Icon ic
   );
 
   Future<int> notificationCount() async {
-    Isar isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema]);
+    Isar isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
+
+    if (key == 'Messages') {
+      return isar.messageModels.filter().readEqualTo(false).count();
+    }
 
     return isar.notificationModels.filter().objectEqualTo(key).pushedAtIsNotNull().readEqualTo(false).count();
   }

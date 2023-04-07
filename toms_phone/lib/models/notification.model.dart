@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 
 import 'package:toms_phone/models/message.model.dart';
+import 'package:toms_phone/models/user.model.dart';
 
 part 'notification.model.g.dart';
 
@@ -25,6 +26,9 @@ class NotificationModel {
   final message = IsarLink<MessageModel>();
 
   String? messageContent;
+  bool? messageIncoming;
+  DateTime? messageCreatedAt;
+  final messageChatWith = IsarLink<UserModel>();
 
   final DateTime created = DateTime.now();
 }
