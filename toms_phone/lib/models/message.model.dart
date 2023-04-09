@@ -1,6 +1,6 @@
 import 'package:isar/isar.dart';
 
-import 'package:toms_phone/models/user.model.dart';
+import 'package:maxs_phone/models/user.model.dart';
 
 part 'message.model.g.dart';
 

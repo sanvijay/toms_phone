@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import "package:collection/collection.dart";
 import 'package:isar/isar.dart';
-import 'package:toms_phone/models/message.model.dart';
-import 'package:toms_phone/models/notification.model.dart';
+import 'package:maxs_phone/models/message.model.dart';
+import 'package:maxs_phone/models/notification.model.dart';
 import 'dart:math' as math;
 
+import '../../models/message_option.model.dart';
 import '../../models/user.model.dart';
 
 class ContactsWidget extends StatefulWidget {
@@ -29,7 +30,7 @@ class _ContactsWidgetState extends State<ContactsWidget> {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([UserModelSchema, NotificationModelSchema, MessageModelSchema]);
+    isar = Isar.getInstance("default") ?? await Isar.open([UserModelSchema, NotificationModelSchema, MessageModelSchema, MessageOptionModelSchema]);
   }
 
   @override

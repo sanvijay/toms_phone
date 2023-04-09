@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:toms_phone/pages/socio/post_card.dart';
+import 'package:maxs_phone/pages/socio/post_card.dart';
 
 class SocioProfileScreen extends StatefulWidget {
   const SocioProfileScreen({Key? key}) : super(key: key);
@@ -14,8 +14,8 @@ class _SocioProfileState extends State<SocioProfileScreen> with TickerProviderSt
       padding: const EdgeInsets.all(8.0),
       child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 8, 0),
             child: Icon(
               Icons.person_pin,
               size: 50,

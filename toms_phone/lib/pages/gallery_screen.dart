@@ -2,7 +2,7 @@
 ///profile: https://github.com/shahbajjamil
 
 import 'package:flutter/material.dart';
-import 'package:toms_phone/pages/gallery/preview_image.dart';
+import 'package:maxs_phone/pages/gallery/preview_image.dart';
 
 class GalleryScreen extends StatefulWidget {
   @override

@@ -5,28 +5,30 @@ import 'package:isar/isar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
-import 'package:toms_phone/constants/game_constants.dart';
-import 'package:toms_phone/libraries/game_logic.dart';
-import 'package:toms_phone/models/message.model.dart';
-import 'package:toms_phone/models/notification.model.dart';
-import 'package:toms_phone/models/user.model.dart';
+import 'package:maxs_phone/constants/game_constants.dart';
+import 'package:maxs_phone/libraries/game_logic.dart';
+import 'package:maxs_phone/models/message.model.dart';
+import 'package:maxs_phone/models/notification.model.dart';
+import 'package:maxs_phone/models/user.model.dart';
 
-import 'package:toms_phone/pages/calculator_screen.dart';
-import 'package:toms_phone/pages/calendar_screen.dart';
-import 'package:toms_phone/pages/call_screen.dart';
-import 'package:toms_phone/pages/clock_screen.dart';
-import 'package:toms_phone/pages/contacts_screen.dart';
-import 'package:toms_phone/pages/gallery_screen.dart';
-import 'package:toms_phone/pages/game_menu_screen.dart';
-import 'package:toms_phone/pages/message_screen.dart';
-import 'package:toms_phone/pages/message_chat_screen.dart';
-import 'package:toms_phone/pages/home_screen.dart';
-import 'package:toms_phone/pages/phone_calling_screen.dart';
-import 'package:toms_phone/pages/phone_starting_screen.dart';
-import 'package:toms_phone/pages/settings_screen.dart';
-import 'package:toms_phone/pages/socio_profile_screen.dart';
-import 'package:toms_phone/pages/socio_screen.dart';
-import 'package:toms_phone/pages/sudoku_screen.dart';
+import 'package:maxs_phone/pages/calculator_screen.dart';
+import 'package:maxs_phone/pages/calendar_screen.dart';
+import 'package:maxs_phone/pages/call_screen.dart';
+import 'package:maxs_phone/pages/clock_screen.dart';
+import 'package:maxs_phone/pages/contacts_screen.dart';
+import 'package:maxs_phone/pages/gallery_screen.dart';
+import 'package:maxs_phone/pages/game_menu_screen.dart';
+import 'package:maxs_phone/pages/message_screen.dart';
+import 'package:maxs_phone/pages/message_chat_screen.dart';
+import 'package:maxs_phone/pages/home_screen.dart';
+import 'package:maxs_phone/pages/phone_calling_screen.dart';
+import 'package:maxs_phone/pages/phone_starting_screen.dart';
+import 'package:maxs_phone/pages/settings_screen.dart';
+import 'package:maxs_phone/pages/socio_profile_screen.dart';
+import 'package:maxs_phone/pages/socio_screen.dart';
+import 'package:maxs_phone/pages/sudoku_screen.dart';
+
+import 'models/message_option.model.dart';
 
 // void main() {
 //   WidgetsFlutterBinding.ensureInitialized();
@@ -85,7 +87,7 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
   }
 
   @override
@@ -101,7 +103,7 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Tom's Phone",
+      title: "Max's Phone",
       theme: ThemeData(
         textTheme: const TextTheme(
           bodyText1: TextStyle(

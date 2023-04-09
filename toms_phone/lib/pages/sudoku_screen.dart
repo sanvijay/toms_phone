@@ -1,8 +1,8 @@
-import 'package:toms_phone/pages/sudoku/sudoku_bloc.dart';
-import 'package:toms_phone/pages/sudoku/widgets/example_button.dart';
-import 'package:toms_phone/pages/sudoku/widgets/grid_tile.dart';
-import 'package:toms_phone/pages/sudoku/widgets/reset_button.dart';
-import 'package:toms_phone/pages/sudoku/widgets/title_text.dart';
+import 'package:maxs_phone/pages/sudoku/sudoku_bloc.dart';
+import 'package:maxs_phone/pages/sudoku/widgets/example_button.dart';
+import 'package:maxs_phone/pages/sudoku/widgets/grid_tile.dart';
+import 'package:maxs_phone/pages/sudoku/widgets/reset_button.dart';
+import 'package:maxs_phone/pages/sudoku/widgets/title_text.dart';
 import 'package:flutter/material.dart';
 
 // https://github.com/HeveshL/Sudoku-Solver

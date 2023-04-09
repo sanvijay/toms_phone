@@ -4,11 +4,12 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
+import 'package:maxs_phone/models/message_option.model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toms_phone/models/message.model.dart';
+import 'package:maxs_phone/models/message.model.dart';
 
-import 'package:toms_phone/models/notification.model.dart';
-import 'package:toms_phone/models/user.model.dart';
+import 'package:maxs_phone/models/notification.model.dart';
+import 'package:maxs_phone/models/user.model.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -344,7 +345,7 @@ Widget iconWidget({ required String key, required String label, required Icon ic
   );
 
   Future<int> notificationCount() async {
-    Isar isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
+    Isar isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
 
     if (key == 'Messages') {
       return isar.messageModels.filter().readEqualTo(false).count();

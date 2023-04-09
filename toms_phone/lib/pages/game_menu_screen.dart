@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toms_phone/libraries/game_data.dart';
+import 'package:maxs_phone/libraries/game_data.dart';
 
-import 'package:toms_phone/libraries/notification_watcher.dart';
-import 'package:toms_phone/constants/game_constants.dart';
+import 'package:maxs_phone/libraries/notification_watcher.dart';
+import 'package:maxs_phone/constants/game_constants.dart';
 
 class GameMenuScreen extends StatefulWidget {
   const GameMenuScreen({Key? key}) : super(key: key);
@@ -37,7 +37,7 @@ class _GameMenuScreenState extends State<GameMenuScreen> {
         child: ListView(
           children: [
             SimpleUserCard(
-              userName: "Tom's Phone",
+              userName: "Max's Phone",
               userProfilePic: const AssetImage("assets/images/profile_image.png"),
               imageRadius: 100,
             ),
@@ -95,7 +95,7 @@ class _GameMenuScreenState extends State<GameMenuScreen> {
                     backgroundColor: Colors.purple,
                   ),
                   title: 'Credits',
-                  subtitle: "Learn more about Tom's mobile game",
+                  subtitle: "Learn more about Max's mobile game",
                 ),
               ],
             ),

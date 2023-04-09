@@ -1,5 +1,5 @@
-name: toms_phone
-description: A game with Tom's phone
+name: maxs_phone
+description: A game with Max's phone
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

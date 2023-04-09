@@ -1,11 +1,11 @@
 {
-    "name": "toms_phone",
-    "short_name": "toms_phone",
+    "name": "Max's Phone",
+    "short_name": "Max's Phone",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A game with Tom's phone",
+    "description": "A game with Max's phone",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

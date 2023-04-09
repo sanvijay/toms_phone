@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.firefliesstudio.toms_phone">
+    package="com.firefliesstudio.maxs_phone">
    <application
-        android:label="toms_phone"
+        android:label="Max's phone"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

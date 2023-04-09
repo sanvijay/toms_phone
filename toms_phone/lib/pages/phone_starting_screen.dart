@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:toms_phone/libraries/game_data.dart';
+import 'package:maxs_phone/libraries/game_data.dart';
 
 import '../constants/game_constants.dart';
 
@@ -66,7 +66,7 @@ class _PhoneStartingScreenState extends State<PhoneStartingScreen> with TickerPr
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                "Tom's phone is starting",
+                "Max's phone is starting",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

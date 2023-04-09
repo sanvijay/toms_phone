@@ -1,9 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:toms_phone/models/user.model.dart';
+import 'package:maxs_phone/models/user.model.dart';
+import 'package:maxs_phone/services/isar_service.dart';
 
 import '../models/message.model.dart';
+import '../models/message_option.model.dart';
 import '../models/notification.model.dart';
 
 import 'package:timeago/timeago.dart' as timeago;
@@ -45,7 +47,7 @@ class _MessageScreenState extends State<MessageScreen> {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
+    isar = await IsarService().db;
   }
 
   List<MessageModel> findLatestMessage() {
@@ -57,7 +59,7 @@ class _MessageScreenState extends State<MessageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: isMessenger ? Colors.orangeAccent : Colors.white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         // iconTheme: const IconThemeData(color: Colors.deepPurple),
@@ -77,14 +79,14 @@ class _MessageScreenState extends State<MessageScreen> {
         //     ),
         //   ),
         // ),
-        backgroundColor: Colors.white10,
+        backgroundColor: isMessenger ? Colors.redAccent : Colors.white10,
         // leading: Padding(
         //   padding: const EdgeInsets.all(12.0),
         //   child: CircleAvatar(backgroundImage: NetworkImage('https://cdn.clipart.email/93ce84c4f719bd9a234fb92ab331bec4_frisco-specialty-clinic-vail-health_480-480.png'),),
         // ),
-        title: const Text(
-          'Messages',
-          style: TextStyle(
+        title: Text(
+          isMessenger ? 'SocioMessenger' : 'Messages',
+          style: const TextStyle(
               fontFamily: 'Poppins',
               fontSize: 16,
               color: Colors.black
@@ -97,7 +99,8 @@ class _MessageScreenState extends State<MessageScreen> {
             onTap: () {
               Navigator.of(context).pushNamed(isMessenger ? '/messenger_chat' : '/message', arguments: { 'phoneNumber': e.chatWith.value?.phoneNumber });
             },
-            child: Padding(
+            child: Container(
+              color: e.read ? Colors.transparent : Colors.black12,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 children: [

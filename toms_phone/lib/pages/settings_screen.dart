@@ -53,7 +53,7 @@ class SettingsScreen extends StatelessWidget {
                     backgroundColor: Colors.purple,
                   ),
                   title: 'Credits',
-                  subtitle: "Learn more about Tom's mobile game",
+                  subtitle: "Learn more about Max's mobile game",
                 ),
               ],
             ),

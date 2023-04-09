@@ -1,6 +1,6 @@
-# toms_phone
+# maxs_phone
 
-A game with Tom's phone
+A game with Max's phone
 
 ## Getting Started
 

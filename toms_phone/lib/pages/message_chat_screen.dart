@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
+import 'package:maxs_phone/models/message_option.model.dart';
 
 import '../models/message.model.dart';
 import '../models/notification.model.dart';
 import '../models/user.model.dart';
-
-String username = 'User';
-String email = 'user@example.com';
-String messageText = '';
 
 class MessageChatScreen extends StatefulWidget {
   late bool isMessenger;
@@ -22,6 +19,7 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   final chatMsgTextController = TextEditingController();
   final bool isMessenger;
   String? phoneNumber;
+  UserModel? currentUser;
   late Isar isar;
 
   _MessageChatScreenState({
@@ -32,30 +30,24 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   void initState() {
     super.initState();
     assignIsarObject();
-    // getMessages();
+    setCurrentUser();
+  }
+
+  List<MessageOptionModel> messageOptions() {
+    return isar.messageOptionModels.filter().contactNameEqualTo(chatWithName()).usedEqualTo(false).findAllSync();
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
   }
 
-  // void getMessages()async{
-  //   final messages=await _firestore.collection('messages').getDocuments();
-  //   for(var message in messages.documents){
-  //     print(message.data);
-  //   }
-  // }
-
-  // void messageStream() async {
-  //   await for (var snapshot in _firestore.collection('messages').snapshots()) {
-  //     snapshot.documents;
-  //   }
-  // }
+  setCurrentUser() {
+    if (phoneNumber == null) { return; }
+    currentUser = isar.userModels.filter().phoneNumberEqualTo(phoneNumber!).findFirstSync()!;
+  }
 
   String chatWithName() {
-    UserModel? user = phoneNumber == null ? null : isar.userModels.filter().phoneNumberEqualTo(phoneNumber!).findFirstSync();
-
-    return user == null ? '' : user.contactName ?? user.phoneNumber;
+    return currentUser!.contactName ?? currentUser!.phoneNumber;
   }
 
   Widget chatMessages() {
@@ -87,10 +79,13 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   @override
   Widget build(BuildContext context) {
     Map data = ModalRoute.of(context)?.settings.arguments as Map;
-    setState(() { phoneNumber = data['phoneNumber']; });
+    setState(() {
+      phoneNumber = data['phoneNumber'];
+      setCurrentUser();
+    });
 
     return Scaffold(
-      backgroundColor: isMessenger ? Colors.orangeAccent : Colors.white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         // automaticallyImplyLeading: false,
         iconTheme: const IconThemeData(color: Colors.black),
@@ -110,14 +105,14 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
         //     ),
         //   ),
         // ),
-        backgroundColor: Colors.white10,
+        backgroundColor: isMessenger ? Colors.redAccent : Colors.white10,
         // leading: Padding(
         //   padding: const EdgeInsets.all(12.0),
         //   child: CircleAvatar(backgroundImage: NetworkImage('https://cdn.clipart.email/93ce84c4f719bd9a234fb92ab331bec4_frisco-specialty-clinic-vail-health_480-480.png'),),
         // ),
         title: Text(
           chatWithName(),
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Poppins',
             fontSize: 16,
             color: Colors.black
@@ -134,6 +129,7 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
           chatMessages(),
           Container(
             alignment: Alignment.bottomCenter,
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 24),
             width: MediaQuery.of(context).size.width,
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
@@ -142,13 +138,37 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
               child: Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      style: TextStyle(color: isMessenger ? Colors.white : Colors.black),
-                      decoration: const InputDecoration(
-                        hintText: "",
-                        border: InputBorder.none,
+                    child: SizedBox(
+                      height: 50,
+                      child: ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: messageOptions().map(
+                                (e) => TextButton(
+                              onPressed: () {
+                                isar.writeTxn(() async {
+                                  e.used = true;
+                                  isar.messageOptionModels.put(e);
+                                  isar.messageModels.put(
+                                    MessageModel(text: e.displayQuestion, createdAt: DateTime.now(), incoming: false, messageType: isMessenger ? MessageType.socioMessage : MessageType.message)..delivered = true..chatWith.value = currentUser!..read = true,
+                                  );
+                                });
+
+                                setState(() {
+
+                                });
+                              },
+                              child: Text(e.question),
+                            )
+                        ).toList()
                       ),
                     ),
+                    // TextFormField(
+                    //   style: TextStyle(color: isMessenger ? Colors.white : Colors.black),
+                    //   decoration: const InputDecoration(
+                    //     hintText: "",
+                    //     border: InputBorder.none,
+                    //   ),
+                    // ),
                     // child: Material(
                     //   borderRadius: BorderRadius.circular(50),
                     //   color: Colors.white,
@@ -168,18 +188,10 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
                   MaterialButton(
                     shape: const CircleBorder(),
                     color: isMessenger ? Colors.redAccent : Colors.green,
-                    onPressed: () {
-                      chatMsgTextController.clear();
-                      // _firestore.collection('messages').add({
-                      //   'sender': username,
-                      //   'text': messageText,
-                      //   'timestamp':DateTime.now().millisecondsSinceEpoch,
-                      //   'senderemail': email
-                      // });
-                    },
+                    onPressed: () {},
                     child: const Padding(
                       padding: EdgeInsets.all(10.0),
-                      child: Icon(Icons.send,color: Colors.white,),
+                      child: Icon(Icons.send, color: Colors.white,),
                     )
                     // Text(
                     //   'Send',
@@ -200,7 +212,8 @@ class MessageBubble extends StatelessWidget {
   final bool isMessenger;
   final MessageModel msg;
 
-  MessageBubble({
+  const MessageBubble({
+    super.key,
     required this.msg,
     required this.isMessenger
   });

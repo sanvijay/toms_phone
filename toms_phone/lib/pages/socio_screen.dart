@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:toms_phone/pages/socio/post_card.dart';
+import 'package:maxs_phone/pages/socio/post_card.dart';
 
 class SocioScreen extends StatefulWidget {
   const SocioScreen({Key? key}) : super(key: key);

@@ -3,9 +3,11 @@ library game_runner;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:isar/isar.dart';
-import 'package:toms_phone/models/message.model.dart';
-import 'package:toms_phone/models/notification.model.dart';
-import 'package:toms_phone/models/user.model.dart';
+import 'package:maxs_phone/models/message.model.dart';
+import 'package:maxs_phone/models/notification.model.dart';
+import 'package:maxs_phone/models/user.model.dart';
+
+import '../models/message_option.model.dart';
 
 class NotificationWatcher {
   late Isar isar;
@@ -19,7 +21,7 @@ class NotificationWatcher {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema]);
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
   }
 
   void watchNotification() async {
@@ -46,7 +48,7 @@ class NotificationWatcher {
 
     ScaffoldMessenger.of(_context).showSnackBar(
       SnackBar(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.black38,
         margin: const EdgeInsets.symmetric(vertical: 50, horizontal: 10),
         elevation: 30,
         // shape: StadiumBorder(),

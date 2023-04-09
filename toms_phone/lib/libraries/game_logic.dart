@@ -1,14 +1,17 @@
 import 'package:isar/isar.dart';
-import 'package:toms_phone/libraries/game_data.dart';
-import 'package:toms_phone/models/message.model.dart';
+import 'package:maxs_phone/libraries/game_data.dart';
+import 'package:maxs_phone/models/message.model.dart';
 
-import 'package:toms_phone/models/notification.model.dart';
+import 'package:maxs_phone/models/notification.model.dart';
+import 'package:maxs_phone/models/user.model.dart';
+
+import '../models/message_option.model.dart';
 
 class GameLogic {
   late Isar isar;
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema]);
+    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, MessageOptionModelSchema, UserModelSchema]);
   }
 
   executeGameLogic() async {
