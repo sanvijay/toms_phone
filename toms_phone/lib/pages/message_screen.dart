@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
@@ -27,6 +29,25 @@ class _MessageScreenState extends State<MessageScreen> {
   _MessageScreenState({
     required this.isMessenger
   });
+  late Timer timer;
+
+  @override
+  void initState() {
+    super.initState();
+    setDataFromDB();
+
+    timer = Timer.periodic(const Duration(seconds: 3,), (Timer t) => checkNewData());
+  }
+
+  void checkNewData() {
+    setDataFromDB();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
 
   void setDataFromDB() async {
     await assignIsarObject();
@@ -37,13 +58,6 @@ class _MessageScreenState extends State<MessageScreen> {
         .findAll();
 
     setState(() { });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    setDataFromDB();
   }
 
   assignIsarObject() async {
@@ -62,28 +76,8 @@ class _MessageScreenState extends State<MessageScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        // iconTheme: const IconThemeData(color: Colors.deepPurple),
         elevation: 0,
-        // bottom: PreferredSize(
-        //   preferredSize: const Size(25, 10),
-        //   child: Container(
-        //     decoration: const BoxDecoration(
-        //       // color: Colors.blue,
-        //
-        //       // borderRadius: BorderRadius.circular(20)
-        //     ),
-        //     constraints: const BoxConstraints.expand(height: 1),
-        //     child: LinearProgressIndicator(
-        //       valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
-        //       backgroundColor: Colors.blue[100],
-        //     ),
-        //   ),
-        // ),
         backgroundColor: isMessenger ? Colors.redAccent : Colors.white10,
-        // leading: Padding(
-        //   padding: const EdgeInsets.all(12.0),
-        //   child: CircleAvatar(backgroundImage: NetworkImage('https://cdn.clipart.email/93ce84c4f719bd9a234fb92ab331bec4_frisco-specialty-clinic-vail-health_480-480.png'),),
-        // ),
         title: Text(
           isMessenger ? 'SocioMessenger' : 'Messages',
           style: const TextStyle(
@@ -124,7 +118,6 @@ class _MessageScreenState extends State<MessageScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(e.chatWith.value?.contactName ?? e.chatWith.value?.phoneNumber ?? '', style: const TextStyle(fontWeight: FontWeight.bold),),
-                            // const Text("2 PM")
                             Text(timeago.format(e.createdAt))
                           ],
                         ),

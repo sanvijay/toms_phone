@@ -8,16 +8,15 @@ part 'notification.model.g.dart';
 @collection
 class NotificationModel {
   NotificationModel({
-    required this.id,
     required this.object,
     required this.canPushKey
   });
 
-  final Id id;
+  Id? id;
 
   final String object;
 
-  final String canPushKey;
+  String canPushKey;
 
   bool read = false;
 

@@ -7,6 +7,7 @@ import 'dart:math' as math;
 
 import '../../models/message_option.model.dart';
 import '../../models/user.model.dart';
+import '../../services/isar_service.dart';
 
 class ContactsWidget extends StatefulWidget {
   const ContactsWidget({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class _ContactsWidgetState extends State<ContactsWidget> {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([UserModelSchema, NotificationModelSchema, MessageModelSchema, MessageOptionModelSchema]);
+    isar = await IsarService().db;
   }
 
   @override

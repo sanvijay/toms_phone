@@ -6,6 +6,7 @@ import 'package:maxs_phone/models/message_option.model.dart';
 import '../models/message.model.dart';
 import '../models/notification.model.dart';
 import '../models/user.model.dart';
+import '../services/isar_service.dart';
 
 class MessageChatScreen extends StatefulWidget {
   late bool isMessenger;
@@ -29,7 +30,7 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   @override
   void initState() {
     super.initState();
-    assignIsarObject();
+
     setCurrentUser();
   }
 
@@ -38,12 +39,15 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
+    isar = await IsarService().db;
   }
 
-  setCurrentUser() {
+  setCurrentUser() async {
     if (phoneNumber == null) { return; }
+    await assignIsarObject();
+
     currentUser = isar.userModels.filter().phoneNumberEqualTo(phoneNumber!).findFirstSync()!;
+    setState(() { });
   }
 
   String chatWithName() {
@@ -83,6 +87,10 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
       phoneNumber = data['phoneNumber'];
       setCurrentUser();
     });
+
+    if (currentUser == null) {
+      return SizedBox.shrink();
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -139,23 +147,39 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
                 children: [
                   Expanded(
                     child: SizedBox(
-                      height: 50,
+                      height: 40,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: messageOptions().map(
                                 (e) => TextButton(
                               onPressed: () {
+                                var message = MessageModel(
+                                    text: e.displayQuestion,
+                                    createdAt: DateTime.now(),
+                                    incoming: false,
+                                    messageType: isMessenger ? MessageType.socioMessage : MessageType.message
+                                )
+                                  ..delivered = true
+                                  ..chatWith.value = currentUser!
+                                  ..read = true;
+
+                                var responseNotification = NotificationModel(
+                                    object: isMessenger ? 'SocioMessage' :'Message',
+                                    canPushKey: 'after4sec'
+                                )
+                                  ..messageContent = e.response
+                                  ..messageIncoming = true
+                                  ..messageChatWith.value = currentUser!;
                                 isar.writeTxn(() async {
                                   e.used = true;
-                                  isar.messageOptionModels.put(e);
-                                  isar.messageModels.put(
-                                    MessageModel(text: e.displayQuestion, createdAt: DateTime.now(), incoming: false, messageType: isMessenger ? MessageType.socioMessage : MessageType.message)..delivered = true..chatWith.value = currentUser!..read = true,
-                                  );
+                                  await isar.messageOptionModels.put(e);
+                                  await isar.messageModels.put(message);
+                                  await message.chatWith.save();
+                                  await isar.notificationModels.put(responseNotification);
+                                  await responseNotification.messageChatWith.save();
                                 });
 
-                                setState(() {
-
-                                });
+                                setState(() { });
                               },
                               child: Text(e.question),
                             )
@@ -193,10 +217,6 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
                       padding: EdgeInsets.all(10.0),
                       child: Icon(Icons.send, color: Colors.white,),
                     )
-                    // Text(
-                    //   'Send',
-                    //   style: kSendButtonTextStyle,
-                    // ),
                   ),
                 ]
               ),

@@ -4,6 +4,7 @@ import 'package:maxs_phone/models/message.model.dart';
 
 import 'package:maxs_phone/models/notification.model.dart';
 import 'package:maxs_phone/models/user.model.dart';
+import 'package:maxs_phone/services/isar_service.dart';
 
 import '../models/message_option.model.dart';
 
@@ -11,7 +12,7 @@ class GameLogic {
   late Isar isar;
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, MessageOptionModelSchema, UserModelSchema]);
+    isar = await IsarService().db;
   }
 
   executeGameLogic() async {
@@ -29,10 +30,10 @@ class GameLogic {
         element.pushedAt = DateTime.now();
         MessageModel? msgMdl;
 
-        if (element.object == 'Message') {
+        if (element.object == 'Message' || element.object == 'SocioMessage') {
           msgMdl = MessageModel(text: element.messageContent!,
               createdAt: element.messageCreatedAt ?? DateTime.now(),
-              messageType: MessageType.message,
+              messageType: element.object == 'Message' ? MessageType.message : MessageType.socioMessage,
               incoming: element.messageIncoming!)
             ..delivered = true
             ..chatWith.value = element.messageChatWith.value!;
@@ -41,7 +42,7 @@ class GameLogic {
         await isar.writeTxn(() async {
           await isar.notificationModels.put(element);
 
-          if (element.object == 'Message') {
+          if (element.object == 'Message' || element.object == 'SocioMessage') {
             await isar.messageModels.put(msgMdl!);
             msgMdl.chatWith.save();
           }

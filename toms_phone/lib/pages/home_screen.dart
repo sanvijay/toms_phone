@@ -11,6 +11,8 @@ import 'package:maxs_phone/models/message.model.dart';
 import 'package:maxs_phone/models/notification.model.dart';
 import 'package:maxs_phone/models/user.model.dart';
 
+import '../services/isar_service.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -244,9 +246,7 @@ class _AppDrawerScreenState extends State<AppDrawerScreen> {
   }
 
   void checkForNewTime() {
-    setState(() {
-      setState(() {});
-    });
+    setState(() { });
   }
 
   @override
@@ -345,7 +345,7 @@ Widget iconWidget({ required String key, required String label, required Icon ic
   );
 
   Future<int> notificationCount() async {
-    Isar isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
+    Isar isar = await IsarService().db;
 
     if (key == 'Messages') {
       return isar.messageModels.filter().readEqualTo(false).count();

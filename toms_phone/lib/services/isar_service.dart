@@ -12,10 +12,6 @@ class IsarService {
     db = openDB();
   }
 
-  Future<Isar> getDB() {
-    return db;
-  }
-
   Future<Isar> openDB() async {
     if (Isar.instanceNames.isEmpty) {
       return await Isar.open([UserModelSchema, NotificationModelSchema, MessageModelSchema, MessageOptionModelSchema]);

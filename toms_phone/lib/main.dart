@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:maxs_phone/services/isar_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
@@ -87,7 +88,7 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
+    isar = await IsarService().db;
   }
 
   @override

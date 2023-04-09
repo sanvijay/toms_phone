@@ -6,6 +6,7 @@ import 'package:isar/isar.dart';
 import 'package:maxs_phone/models/message.model.dart';
 import 'package:maxs_phone/models/notification.model.dart';
 import 'package:maxs_phone/models/user.model.dart';
+import 'package:maxs_phone/services/isar_service.dart';
 
 import '../models/message_option.model.dart';
 
@@ -21,7 +22,7 @@ class NotificationWatcher {
   }
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
+    isar = await IsarService().db;
   }
 
   void watchNotification() async {

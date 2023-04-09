@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
+import 'package:maxs_phone/services/isar_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:maxs_phone/constants/game_constants.dart';
@@ -15,7 +16,7 @@ class GameData {
   Map<String, UserModel>? _userMap;
 
   assignIsarObject() async {
-    isar = Isar.getInstance("default") ?? await Isar.open([NotificationModelSchema, MessageModelSchema, UserModelSchema, MessageOptionModelSchema]);
+    isar = await IsarService().db;
   }
 
   deleteAllData() async {
@@ -25,9 +26,7 @@ class GameData {
     prefs.setInt(gameRunTimePref, 0);
     prefs.setBool(gameStartedBoolPref, false);
 
-    await isar.writeTxn(() async {
-      isar.clear();
-    });
+    await isar.writeTxn(() => isar.clear());
   }
 
   initializeAllData() async {
@@ -120,12 +119,20 @@ class GameData {
       return false;
     }
 
+    await assignIsarObject();
+
     var prefs = await SharedPreferences.getInstance();
     int gameRunTime = prefs.getInt(gameRunTimePref) ?? 0;
 
     switch (element.canPushKey) {
       case 'firstMessages':
         return gameRunTime > 12;
+      case 'immediate':
+        return true;
+      case 'after4sec':
+        element.canPushKey = 'immediate';
+        isar.writeTxn(() => isar.notificationModels.put(element));
+        return false;
       default:
         return false;
     }
@@ -133,11 +140,11 @@ class GameData {
 
   List<NotificationModel> initialNotificationData() {
     return [
-      NotificationModel(id: 1, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'I am trying to call you for a long time'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
-      NotificationModel(id: 2, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'Where are you both?'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
-      NotificationModel(id: 3, object: 'Message', canPushKey: 'firstMessages')..messageContent = "Don't try to fool around"..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
-      NotificationModel(id: 4, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'Call me back soon!'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
-      NotificationModel(id: 5, object: 'Message', canPushKey: 'firstMessages')..messageContent = 'I am going to call the police.'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(object: 'Message', canPushKey: 'firstMessages')..messageContent = 'I am trying to call you for a long time'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(object: 'Message', canPushKey: 'firstMessages')..messageContent = 'Where are you both?'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(object: 'Message', canPushKey: 'firstMessages')..messageContent = "Don't try to fool around"..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(object: 'Message', canPushKey: 'firstMessages')..messageContent = 'Call me back soon!'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
+      NotificationModel(object: 'Message', canPushKey: 'firstMessages')..messageContent = 'I am going to call the police.'..messageIncoming = true..messageChatWith.value = userMap()['edgar']!,
     ];
   }
 
@@ -246,6 +253,7 @@ class GameData {
   List<MessageOptionModel> initialMessageOptionData() {
     return [
       MessageOptionModel(contactName: 'Edgar', response: "Don't you know who I am? Give back the money now.", question: 'Who are you?', displayQuestion: 'Who are you?'),
+      MessageOptionModel(contactName: 'Colt', response: "Don't you know who I am? Give back the money now.", question: 'Who are you?', displayQuestion: 'Who are you?'),
     ];
   }
 }

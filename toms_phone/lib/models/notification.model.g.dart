@@ -126,9 +126,9 @@ NotificationModel _notificationModelDeserialize(
 ) {
   final object = NotificationModel(
     canPushKey: reader.readString(offsets[0]),
-    id: id,
     object: reader.readString(offsets[5]),
   );
+  object.id = id;
   object.messageContent = reader.readStringOrNull(offsets[2]);
   object.messageCreatedAt = reader.readDateTimeOrNull(offsets[3]);
   object.messageIncoming = reader.readBoolOrNull(offsets[4]);
@@ -166,7 +166,7 @@ P _notificationModelDeserializeProp<P>(
 }
 
 Id _notificationModelGetId(NotificationModel object) {
-  return object.id;
+  return object.id ?? Isar.autoIncrement;
 }
 
 List<IsarLinkBase<dynamic>> _notificationModelGetLinks(
@@ -176,6 +176,7 @@ List<IsarLinkBase<dynamic>> _notificationModelGetLinks(
 
 void _notificationModelAttach(
     IsarCollection<dynamic> col, Id id, NotificationModel object) {
+  object.id = id;
   object.message
       .attach(col, col.isar.collection<MessageModel>(), r'message', id);
   object.messageChatWith
@@ -457,7 +458,25 @@ extension NotificationModelQueryFilter
   }
 
   QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
-      idEqualTo(Id value) {
+      idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
+      idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -468,7 +487,7 @@ extension NotificationModelQueryFilter
 
   QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
       idGreaterThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -482,7 +501,7 @@ extension NotificationModelQueryFilter
 
   QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
       idLessThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -496,8 +515,8 @@ extension NotificationModelQueryFilter
 
   QueryBuilder<NotificationModel, NotificationModel, QAfterFilterCondition>
       idBetween(
-    Id lower,
-    Id upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
