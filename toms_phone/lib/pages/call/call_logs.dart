@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import "package:collection/collection.dart";
 import 'package:intl/intl.dart';
+import 'package:isar/isar.dart';
+import 'package:maxs_phone/models/call_log.model.dart';
+
+import '../../services/isar_service.dart';
 
 class CallLogsWidget extends StatefulWidget {
   const CallLogsWidget({Key? key}) : super(key: key);
@@ -10,91 +14,39 @@ class CallLogsWidget extends StatefulWidget {
 }
 
 class _CallLogsWidgetState extends State<CallLogsWidget> {
-  List<dynamic> callLogs = [
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "outgoing"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "missed"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "rejected"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now(),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now().subtract(Duration(days:1)),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now().subtract(Duration(days:2)),
-      "callStatus": "incoming"
-    },
-    {
-      "phoneNumber": "+91 9042186832",
-      "dateTime": DateTime.now().subtract(Duration(days:2)),
-      "callStatus": "incoming"
-    },
-  ];
+  List<CallLogModel> callLogs = [];
+  late Isar isar;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    setDataFromDB();
+  }
+
+  void setDataFromDB() async {
+    await assignIsarObject();
+    callLogs = await isar.callLogModels
+        .filter()
+        .idIsNotNull()
+        .sortByCreatedAtDesc()
+        .findAll();
+
+    setState(() { });
+  }
+
+  assignIsarObject() async {
+    isar = await IsarService().db;
+  }
 
   Widget groupCallLogs() {
-    var groupedLogs = groupBy(callLogs, (obj) {
-      int difference = DateTime.now().difference((obj as Map)["dateTime"]).inDays;
+    var groupedLogs = groupBy(callLogs, (CallLogModel obj) {
+      int difference = DateTime.now().difference(obj.createdAt).inDays;
 
       if (difference == 0) { return "Today"; }
       else if (difference == 1) { return "Yesterday"; }
-      else { return DateFormat("MMMM d").format(obj["dateTime"]); }
+      else { return DateFormat("MMMM d").format(obj.createdAt); }
     });
 
     List<Widget> logWidgets = [];
@@ -120,26 +72,26 @@ class _CallLogsWidgetState extends State<CallLogsWidget> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Icon(
-                      log["callStatus"] == "outgoing" ? Icons.phone_forwarded : (log["callStatus"] == "incoming" ? Icons.phone_callback : (log["callStatus"] == "missed" ? Icons.phone_missed : Icons.phone_disabled))
+                      log.callType == CallType.outgoing ? Icons.phone_forwarded : (log.callType == CallType.incoming ? Icons.phone_callback : (log.callType == CallType.missed ? Icons.phone_missed : Icons.phone_disabled))
                   ),
                 ),
 
                 Expanded(
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.pushNamed(context, "/phone-call", arguments: { 'outgoingCall': true, 'phoneNumber': log["phoneNumber"] });
+                      Navigator.pushNamed(context, "/phone-call", arguments: { 'outgoingCall': true, 'phoneNumber': log.callWith.value!.phoneNumber, 'contactName': log.callWith.value!.contactName });
                     },
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(log["phoneNumber"].toString()),
+                        Text((log.callWith.value!.contactName ?? log.callWith.value!.phoneNumber).toString()),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             const Icon(Icons.mic, color: Colors.grey, size: 16,),
                             const SizedBox(height: 4,),
-                            Text(DateFormat("h:mm a").format(log["dateTime"])),
+                            Text(DateFormat("h:mm a").format(log.createdAt)),
                           ],
                         ),
                       ],

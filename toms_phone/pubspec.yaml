@@ -80,6 +80,7 @@ flutter:
     - assets/images/profile_image.png
 #    - assets/images/drawer_icon_512.png
     - assets/sounds/call_ends.wav
+    - assets/sounds/ringtone.mp3
     - assets/images/sudoku_icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

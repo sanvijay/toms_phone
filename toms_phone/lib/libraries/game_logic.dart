@@ -3,10 +3,7 @@ import 'package:maxs_phone/libraries/game_data.dart';
 import 'package:maxs_phone/models/message.model.dart';
 
 import 'package:maxs_phone/models/notification.model.dart';
-import 'package:maxs_phone/models/user.model.dart';
 import 'package:maxs_phone/services/isar_service.dart';
-
-import '../models/message_option.model.dart';
 
 class GameLogic {
   late Isar isar;
@@ -37,6 +34,8 @@ class GameLogic {
               incoming: element.messageIncoming!)
             ..delivered = true
             ..chatWith.value = element.messageChatWith.value!;
+        } else if (element.object == 'IncomingCall') {
+          // TODO: incoming call
         }
 
         await isar.writeTxn(() async {

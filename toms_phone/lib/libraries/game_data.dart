@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
-import 'package:maxs_phone/services/isar_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:maxs_phone/services/isar_service.dart';
 import 'package:maxs_phone/constants/game_constants.dart';
 
 import 'package:maxs_phone/models/message.model.dart';
 import 'package:maxs_phone/models/notification.model.dart';
 import 'package:maxs_phone/models/user.model.dart';
 import 'package:maxs_phone/models/message_option.model.dart';
+import 'package:maxs_phone/models/call_log.model.dart';
 
 class GameData {
   late Isar isar;
@@ -37,10 +38,13 @@ class GameData {
       return;
     }
 
+    await deleteAllData();
+
     await initializeUser();
     await initializeNotification();
     await initializeMessage();
-    await initializeMessageOption();
+    await initializeMessageOptions();
+    await initializeCallLogs();
 
     prefs.setBool(gameStartedBoolPref, true);
   }
@@ -55,9 +59,6 @@ class GameData {
     userMap();
 
     await isar.writeTxn(() async {
-      isar.messageModels.filter().createdAtLessThan(DateTime.now()).deleteAll();
-      isar.messageModels.filter().createdAtGreaterThan(DateTime.now()).deleteAll();
-
       for (var message in initialMessageData()) {
         await isar.messageModels.put(message);
         await message.chatWith.save();
@@ -74,9 +75,6 @@ class GameData {
     }
 
     await isar.writeTxn(() async {
-      isar.notificationModels.filter().pushedAtIsNull().deleteAll();
-      isar.notificationModels.filter().pushedAtIsNotNull().deleteAll();
-
       for (var notification in initialNotificationData()) {
         await isar.notificationModels.put(notification);
         await notification.messageChatWith.save();
@@ -93,23 +91,30 @@ class GameData {
     }
 
     await isar.writeTxn(() async {
-      isar.userModels.filter().contactNameIsEmpty().deleteAll();
-      isar.userModels.filter().contactNameIsNotEmpty().deleteAll();
-
       for (var user in initialUserData()) {
         await isar.userModels.put(user);
       }
     });
   }
 
-  Future<void> initializeMessageOption() async {
+  Future<void> initializeMessageOptions() async {
     await assignIsarObject();
 
     await isar.writeTxn(() async {
-      isar.messageOptionModels.filter().contactNameIsNotEmpty().deleteAll();
-
       for (var messageOption in initialMessageOptionData()) {
         await isar.messageOptionModels.put(messageOption);
+      }
+    });
+  }
+
+
+  Future<void> initializeCallLogs() async {
+    await assignIsarObject();
+
+    await isar.writeTxn(() async {
+      for (var callLog in initialCallLogData()) {
+        await isar.callLogModels.put(callLog);
+        await callLog.callWith.save();
       }
     });
   }
@@ -254,6 +259,15 @@ class GameData {
     return [
       MessageOptionModel(contactName: 'Edgar', response: "Don't you know who I am? Give back the money now.", question: 'Who are you?', displayQuestion: 'Who are you?'),
       MessageOptionModel(contactName: 'Colt', response: "Don't you know who I am? Give back the money now.", question: 'Who are you?', displayQuestion: 'Who are you?'),
+    ];
+  }
+
+  List<CallLogModel> initialCallLogData() {
+    return [
+      CallLogModel(callType: CallType.incoming, createdAt: DateTime.now())..callWith.value = userMap()['colt']!,
+      CallLogModel(callType: CallType.outgoing, createdAt: DateTime.now())..callWith.value = userMap()['colt']!,
+      CallLogModel(callType: CallType.missed, createdAt: DateTime.now())..callWith.value = userMap()['colt']!,
+      CallLogModel(callType: CallType.rejected, createdAt: DateTime.now())..callWith.value = userMap()['colt']!,
     ];
   }
 }

@@ -17,20 +17,17 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
   String phoneNumber = "";
   String? contactName;
   late Timer timer;
+  AudioPlayer player = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
     startTime();
-    // playSound();
   }
 
   playSound() async {
-    final player = AudioPlayer();
-
     const alarmAudioPath = "sounds/call_ends.wav";
     await player.play(AssetSource(alarmAudioPath));
-    // await player.setSource();
   }
 
   startTime() async {
@@ -38,6 +35,7 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
   }
 
   route() {
+    playSound();
     Navigator.pop(context);
   }
 
@@ -56,6 +54,7 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
   @override
   void dispose() {
     timer.cancel();
+    // player.release(); // TODO: Fix this
     super.dispose();
   }
 
@@ -84,18 +83,6 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
         child: Column(
           children: [
             const SizedBox(height: 40,),
-            // Container(
-            //   height: 100,
-            //   width: 100,
-            //   decoration: BoxDecoration(
-            //     shape: BoxShape.circle,
-            //   ),
-            //   child: Icon(
-            //     Icons.person_outline,
-            //     // color: Colors.white,
-            //     size: 40,
-            //   ),
-            // ),
             const Icon(
               Icons.person_pin,
               color: Colors.white,

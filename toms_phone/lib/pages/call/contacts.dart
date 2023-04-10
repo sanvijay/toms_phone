@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import "package:collection/collection.dart";
 import 'package:isar/isar.dart';
-import 'package:maxs_phone/models/message.model.dart';
-import 'package:maxs_phone/models/notification.model.dart';
 import 'dart:math' as math;
 
-import '../../models/message_option.model.dart';
 import '../../models/user.model.dart';
 import '../../services/isar_service.dart';
 

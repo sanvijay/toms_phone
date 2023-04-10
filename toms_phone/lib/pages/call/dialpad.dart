@@ -2,6 +2,11 @@ library flutter_dialpad;
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
+import 'package:maxs_phone/models/call_log.model.dart';
+
+import '../../models/user.model.dart';
+import '../../services/isar_service.dart';
 
 // https://github.com/eopeter/flutter_dialpad
 class DialPad extends StatefulWidget {
@@ -38,6 +43,7 @@ class DialPad extends StatefulWidget {
 }
 
 class _DialPadState extends State<DialPad> {
+  late Isar isar;
   late TextEditingController textEditingController;
 
   var _value = "";
@@ -63,6 +69,33 @@ class _DialPadState extends State<DialPad> {
         // MaskedTextController(
         // mask: widget.outputMask != null ? widget.outputMask : '(000) 000-0000');
     super.initState();
+  }
+
+  insertCallLog(phoneNumber) async {
+    await assignIsarObject();
+
+    UserModel? user;
+
+    user = isar.userModels.filter().phoneNumberEqualTo(phoneNumber).findFirstSync();
+
+    if (user == null) {
+      await isar.writeTxn(() async {
+        await isar.userModels.put(UserModel(phoneNumber: phoneNumber, createdAt: DateTime.now()));
+      });
+
+      user = isar.userModels.filter().phoneNumberEqualTo(phoneNumber).findFirstSync();
+    }
+
+    var callLog = CallLogModel(callType: CallType.outgoing, createdAt: DateTime.now())..callWith.value = user!;
+
+    await isar.writeTxn(() async {
+      await isar.callLogModels.put(callLog);
+      await callLog.callWith.save();
+    });
+  }
+
+  assignIsarObject() async {
+    isar = await IsarService().db;
   }
 
   _setText(String? value) async {
@@ -148,6 +181,7 @@ class _DialPadState extends State<DialPad> {
                       // widget.makeCall!(_value);
                       if (_value.isEmpty) return;
 
+                      insertCallLog(_value);
                       Navigator.pushNamed(context, "/phone-call", arguments: { 'outgoingCall': true, 'phoneNumber': _value });
                       _value = "";
                       textEditingController.text = _value;

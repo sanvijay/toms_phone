@@ -3,13 +3,9 @@ import 'dart:async';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:maxs_phone/models/user.model.dart';
 import 'package:maxs_phone/services/isar_service.dart';
 
 import '../models/message.model.dart';
-import '../models/message_option.model.dart';
-import '../models/notification.model.dart';
-
 import 'package:timeago/timeago.dart' as timeago;
 
 class MessageScreen extends StatefulWidget {
