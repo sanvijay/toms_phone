@@ -19,7 +19,6 @@ class _CallLogsWidgetState extends State<CallLogsWidget> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     setDataFromDB();
@@ -101,7 +100,7 @@ class _CallLogsWidgetState extends State<CallLogsWidget> {
                 PopupMenuButton<String>(
                   onSelected: (String? value) {},
                   itemBuilder: (BuildContext context) {
-                    return {'Logout', 'Settings'}.map((String choice) {
+                    return {'Call Again'}.map((String choice) {
                       return PopupMenuItem<String>(
                         value: choice,
                         child: Text(choice),

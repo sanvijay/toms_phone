@@ -2,6 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:isar/isar.dart';
+
+import '../models/call_log.model.dart';
+import '../models/notification.model.dart';
+import '../models/user.model.dart';
+import '../services/isar_service.dart';
 
 class PhoneCallingScreen extends StatefulWidget {
   const PhoneCallingScreen({Key? key}) : super(key: key);
@@ -16,13 +22,14 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
   bool outgoingCall = true;
   String phoneNumber = "";
   String? contactName;
-  late Timer timer;
+  Timer? timer;
   AudioPlayer player = AudioPlayer();
+  late Isar isar;
 
   @override
   void initState() {
     super.initState();
-    startTime();
+    assignIsarObject();
   }
 
   playSound() async {
@@ -30,11 +37,17 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
     await player.play(AssetSource(alarmAudioPath));
   }
 
-  startTime() async {
-    timer = Timer(const Duration(seconds: 5,), route);
+  playIncomingVoice() async {
+    const alarmAudioPath = "sounds/edgar_incoming.mp3";
+    await player.play(AssetSource(alarmAudioPath));
+  }
+
+  startTime(time) async {
+    timer = Timer(Duration(seconds: time,), route);
   }
 
   route() {
+    insertEdgarMessage();
     playSound();
     Navigator.pop(context);
   }
@@ -51,9 +64,57 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
     });
   }
 
+  insertEdgarMessage() {
+    if (!outgoingCall) {
+      var user = isar.userModels.filter().phoneNumberEqualTo(phoneNumber).findFirstSync();
+
+      var responseNotification = NotificationModel(
+          object: 'Message',
+          canPushKey: 'after4sec'
+      )
+        ..messageContent = 'Why are you not speaking? Speak something or this will go worse.'
+        ..messageIncoming = true
+        ..messageChatWith.value = user!;
+
+      isar.writeTxn(() async {
+        await isar.notificationModels.put(responseNotification);
+        await responseNotification.messageChatWith.save();
+      });
+    }
+  }
+
+  insertCallLog(phoneNumber) async {
+    if (!outgoingCall) { return; }
+
+    await assignIsarObject();
+
+    UserModel? user;
+
+    user = isar.userModels.filter().phoneNumberEqualTo(phoneNumber).findFirstSync();
+
+    if (user == null) {
+      await isar.writeTxn(() async {
+        await isar.userModels.put(UserModel(phoneNumber: phoneNumber, createdAt: DateTime.now()));
+      });
+
+      user = isar.userModels.filter().phoneNumberEqualTo(phoneNumber).findFirstSync();
+    }
+
+    var callLog = CallLogModel(callType: CallType.outgoing, createdAt: DateTime.now())..callWith.value = user!;
+
+    await isar.writeTxn(() async {
+      await isar.callLogModels.put(callLog);
+      await callLog.callWith.save();
+    });
+  }
+
+  assignIsarObject() async {
+    isar = await IsarService().db;
+  }
+
   @override
   void dispose() {
-    timer.cancel();
+    timer?.cancel();
     // player.release(); // TODO: Fix this
     super.dispose();
   }
@@ -64,7 +125,21 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
     final textTheme = Theme.of(context).textTheme;
 
     Map data = ModalRoute.of(context)?.settings.arguments as Map;
-    setState(() { outgoingCall = data['outgoingCall']; phoneNumber = data['phoneNumber']; contactName = data['contactName']; });
+    setState(() {
+      outgoingCall = data['outgoingCall'];
+      phoneNumber = data['phoneNumber'];
+      contactName = data['contactName'];
+
+      insertCallLog(phoneNumber);
+
+      if(outgoingCall) {
+        startTime(5);
+      }
+      else {
+        playIncomingVoice();
+        startTime(14);
+      }
+    });
 
     return Scaffold(
       body: Container(
@@ -161,6 +236,9 @@ class _PhoneCallingScreenState extends State<PhoneCallingScreen> with TickerProv
               children: [
                 TextButton(
                   onPressed: () {
+                    player.release();
+                    timer?.cancel();
+                    insertEdgarMessage();
                     Navigator.pop(context);
                   },
                   style: TextButton.styleFrom(

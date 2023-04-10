@@ -13,7 +13,7 @@ class _SocioScreenState extends State<SocioScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.redAccent,
         automaticallyImplyLeading: false,
         title: const Text("Sociogram"),
         actions: [

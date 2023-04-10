@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
+import 'package:maxs_phone/pages/phone_incoming_screen.dart';
 import 'package:maxs_phone/services/isar_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
@@ -125,6 +126,7 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
         '/call': (context) => const CallScreen(),
         '/sudoku': (context) => const SudokuScreen(),
         '/phone-call': (context) => const PhoneCallingScreen(),
+        '/incoming-call': (context) => const PhoneIncomingScreen(),
         '/contacts': (context) => const ContactsScreen(),
         '/socio': (context) => const SocioScreen(),
         '/socio-profile': (context) => const SocioProfileScreen(),

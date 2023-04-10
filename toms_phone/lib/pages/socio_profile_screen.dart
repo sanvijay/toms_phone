@@ -40,7 +40,7 @@ class _SocioProfileState extends State<SocioProfileScreen> with TickerProviderSt
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orangeAccent,
+        backgroundColor: Colors.redAccent,
         automaticallyImplyLeading: false,
         title: const Text("Sociogram"),
       ),

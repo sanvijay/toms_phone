@@ -43,7 +43,6 @@ class GameData {
     await initializeUser();
     await initializeNotification();
     await initializeMessage();
-    await initializeMessageOptions();
     await initializeCallLogs();
 
     prefs.setBool(gameStartedBoolPref, true);
@@ -96,17 +95,6 @@ class GameData {
       }
     });
   }
-
-  Future<void> initializeMessageOptions() async {
-    await assignIsarObject();
-
-    await isar.writeTxn(() async {
-      for (var messageOption in initialMessageOptionData()) {
-        await isar.messageOptionModels.put(messageOption);
-      }
-    });
-  }
-
 
   Future<void> initializeCallLogs() async {
     await assignIsarObject();
@@ -252,13 +240,6 @@ class GameData {
       UserModel(phoneNumber: '+1 520-978-5420', createdAt: DateTime.now())..contactName = 'Jessie',
       UserModel(phoneNumber: '+1 202-918-2132', createdAt: DateTime.now())..contactName = 'Edgar',
       UserModel(phoneNumber: '+1 203-476-0535', createdAt: DateTime.now())..contactName = 'Colt',
-    ];
-  }
-
-  List<MessageOptionModel> initialMessageOptionData() {
-    return [
-      MessageOptionModel(contactName: 'Edgar', response: "Don't you know who I am? Give back the money now.", question: 'Who are you?', displayQuestion: 'Who are you?'),
-      MessageOptionModel(contactName: 'Colt', response: "Don't you know who I am? Give back the money now.", question: 'Who are you?', displayQuestion: 'Who are you?'),
     ];
   }
 

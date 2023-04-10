@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
+import 'package:maxs_phone/constants/game_constants.dart';
 import 'package:maxs_phone/models/message_option.model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/message.model.dart';
 import '../models/notification.model.dart';
@@ -89,7 +91,7 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
     });
 
     if (currentUser == null) {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
 
     return Scaffold(
@@ -152,7 +154,7 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
                         scrollDirection: Axis.horizontal,
                         children: messageOptions().map(
                                 (e) => TextButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 var message = MessageModel(
                                     text: e.displayQuestion,
                                     createdAt: DateTime.now(),
@@ -175,9 +177,26 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
                                   await isar.messageOptionModels.put(e);
                                   await isar.messageModels.put(message);
                                   await message.chatWith.save();
-                                  await isar.notificationModels.put(responseNotification);
-                                  await responseNotification.messageChatWith.save();
+
+                                  if (e.response != '') {
+                                    await isar.notificationModels.put(
+                                        responseNotification);
+                                    await responseNotification.messageChatWith
+                                        .save();
+                                  }
                                 });
+
+                                var prefs = await SharedPreferences.getInstance();
+                                bool ghostRevealed = prefs.getBool(ghostRevealedPref) ?? false;
+
+                                if (!ghostRevealed) {
+                                  var count = isar.messageOptionModels.filter().usedEqualTo(false).countSync();
+
+                                  if (count == 0) {
+                                    var msgOpt = MessageOptionModel(contactName: 'Jessie', response: "", question: 'Found this phone on the street.', displayQuestion: 'Found this phone on the street.');
+                                    isar.writeTxn(() => isar.messageOptionModels.put(msgOpt));
+                                  }
+                                }
 
                                 setState(() { });
                               },

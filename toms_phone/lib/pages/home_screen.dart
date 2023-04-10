@@ -9,8 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:maxs_phone/models/message.model.dart';
 
 import 'package:maxs_phone/models/notification.model.dart';
-import 'package:maxs_phone/models/user.model.dart';
 
+import '../constants/game_constants.dart';
 import '../services/isar_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,24 +23,48 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime now = DateTime.now();
   late Timer timer;
+  late Isar isar;
 
   @override
   void initState() {
     super.initState();
     setInGame();
+    assignIsarObject();
 
     timer = Timer.periodic(const Duration(seconds: 5,), (Timer t) => checkForNewTime());
   }
 
   void setInGame() async {
     var prefs = await SharedPreferences.getInstance();
-    prefs.setBool('inGame', true);
+    prefs.setBool(inGamePref, true);
+  }
+
+  void checkEdgarCall() async {
+    var prefs = await SharedPreferences.getInstance();
+    if (prefs.getString(triggerCallFromEdgarPref) == 'callNow') {
+      Future(() {
+        Navigator.of(context).pushNamed('/incoming-call', arguments: { 'phoneNumber': '+1 202-918-2132', 'contactName': 'Edgar' } );
+      });
+    }
+  }
+
+  void revealGhost() {
+    var count = isar.messageOptionModels.filter().contactNameEqualTo('Jessie').questionEqualTo('value').usedEqualTo(true).countSync();
+
+    if (count == 1) {
+
+    }
+  }
+
+  assignIsarObject() async {
+    isar = await IsarService().db;
   }
 
   void checkForNewTime() {
     setState(() {
       now = DateTime.now();
-      setState(() {});
+
+      checkEdgarCall();
     });
   }
 
@@ -83,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () async {
                   willLeave = true;
                   var prefs = await SharedPreferences.getInstance();
-                  prefs.setBool('inGame', false);
+                  prefs.setBool(inGamePref, false);
                   Navigator.of(context).pop();
                 },
                 child: const Text('Yes')
