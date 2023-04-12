@@ -39,6 +39,29 @@ class _HomeScreenState extends State<HomeScreen> {
     prefs.setBool(inGamePref, true);
   }
 
+  void checkMessageOption() async {
+    var prefs = await SharedPreferences.getInstance();
+    bool ghostRevealed = prefs.getBool(ghostRevealedPref) ?? false;
+
+    if (!ghostRevealed) {
+      var count = isar.messageOptionModels.filter().usedEqualTo(false).countSync();
+
+      var countJessie = isar.messageOptionModels.filter()
+          .contactNameEqualTo('Jessie')
+          .questionEqualTo('Found this phone on the street.')
+          .countSync();
+
+      var countAll = isar.messageOptionModels.countSync();
+
+      if (count == 0 && countAll != 0 && countJessie == 0) {
+        var msgOpt = MessageOptionModel(contactName: 'Jessie', response: "", question: 'Found this phone on the street.', displayQuestion: 'Found this phone on the street.');
+        await isar.writeTxn(() async {
+          await isar.messageOptionModels.put(msgOpt);
+        });
+      }
+    }
+  }
+
   void checkEdgarCall() async {
     var prefs = await SharedPreferences.getInstance();
     if (prefs.getString(triggerCallFromEdgarPref) == 'callNow') {
@@ -48,11 +71,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void revealGhost() {
-    var count = isar.messageOptionModels.filter().contactNameEqualTo('Jessie').questionEqualTo('value').usedEqualTo(true).countSync();
+  void revealGhost() async {
+    await assignIsarObject();
 
-    if (count == 1) {
+    var count = isar.messageOptionModels.filter()
+        .contactNameEqualTo('Jessie')
+        .questionEqualTo('Found this phone on the street.')
+        .usedEqualTo(true)
+        .countSync();
 
+    var prefs = await SharedPreferences.getInstance();
+    bool ghostRevealed = prefs.getBool(ghostRevealedPref) ?? false;
+
+    if (count == 1 && !ghostRevealed) {
+      Navigator.pushNamed(context, '/reveal-ghost');
     }
   }
 
@@ -65,6 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
       now = DateTime.now();
 
       checkEdgarCall();
+      checkMessageOption();
+      revealGhost();
     });
   }
 

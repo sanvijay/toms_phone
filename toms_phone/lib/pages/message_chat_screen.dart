@@ -186,18 +186,6 @@ class _MessageChatScreenState extends State<MessageChatScreen> {
                                   }
                                 });
 
-                                var prefs = await SharedPreferences.getInstance();
-                                bool ghostRevealed = prefs.getBool(ghostRevealedPref) ?? false;
-
-                                if (!ghostRevealed) {
-                                  var count = isar.messageOptionModels.filter().usedEqualTo(false).countSync();
-
-                                  if (count == 0) {
-                                    var msgOpt = MessageOptionModel(contactName: 'Jessie', response: "", question: 'Found this phone on the street.', displayQuestion: 'Found this phone on the street.');
-                                    isar.writeTxn(() => isar.messageOptionModels.put(msgOpt));
-                                  }
-                                }
-
                                 setState(() { });
                               },
                               child: Text(e.question),

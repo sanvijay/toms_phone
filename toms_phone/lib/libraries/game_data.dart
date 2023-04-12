@@ -24,8 +24,7 @@ class GameData {
     await assignIsarObject();
 
     var prefs = await SharedPreferences.getInstance();
-    prefs.setInt(gameRunTimePref, 0);
-    prefs.setBool(gameStartedBoolPref, false);
+    prefs.clear();
 
     await isar.writeTxn(() => isar.clear());
   }
