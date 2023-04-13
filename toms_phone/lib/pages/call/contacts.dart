@@ -22,6 +22,7 @@ class _ContactsWidgetState extends State<ContactsWidget> {
     contactList = await isar.userModels
         .filter()
         .contactNameIsNotEmpty()
+        .sortByContactName()
         .findAll();
 
     setState(() { });

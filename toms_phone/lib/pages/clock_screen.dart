@@ -12,7 +12,7 @@ class ClockScreen extends StatefulWidget {
 
 class _ClockScreenState extends State<ClockScreen> {
   late Timer timer;
-  final format = new NumberFormat("00");
+  final format = NumberFormat("00");
 
   DateTime now = DateTime.now();
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:isar/isar.dart';
-import 'package:maxs_phone/constants/game_constants.dart';
 import 'package:maxs_phone/models/message_option.model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/message.model.dart';
 import '../models/notification.model.dart';
