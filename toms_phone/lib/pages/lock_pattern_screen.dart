@@ -1,107 +1,47 @@
-import 'dart:async';
-
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:maxs_phone/pages/socio/post_card.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../constants/game_constants.dart';
-
-class SocioScreen extends StatefulWidget {
-  const SocioScreen({Key? key}) : super(key: key);
+class LockPatternScreen extends StatefulWidget {
+  LockPatternScreen({Key? key}) : super(key: key);
 
   @override
-  State<SocioScreen> createState() => _SocioScreenState();
+  _LockPatternScreenState createState() => _LockPatternScreenState();
 }
 
-class _SocioScreenState extends State<SocioScreen> {
+class _LockPatternScreenState extends State<LockPatternScreen> {
   Offset offset = Offset.zero;
   List<int> codes = [];
-  List<int> secretCodes = [1,2,3,4];
-
-  bool ghostRevealed = false;
-  bool unlockedSociogram = false;
-  bool wrongCode = false;
-  bool somethingWentWrong = false;
-  late Timer timer;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-
-    setGhostRevealed();
-    timer = Timer(const Duration(seconds: 4,), refresh);
-    super.initState();
-  }
-
-  refresh() {
-    setState(() {
-      setGhostRevealed();
-    });
-  }
-
-  @override
-  void dispose() {
-    timer.cancel();
-    super.dispose();
-  }
-
-  void setGhostRevealed() async {
-    var prefs = await SharedPreferences.getInstance();
-    ghostRevealed = prefs.getBool(ghostRevealedPref) ?? false;
-    unlockedSociogram = prefs.getBool(unlockedSociogramPref) ?? false;
-  }
 
   @override
   Widget build(BuildContext context) {
-    return unlockedSociogram ? mainScreen(context) : lockScreen(context);
-  }
-
-  Widget mainScreen(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.redAccent,
-        automaticallyImplyLeading: false,
-        title: const Text("Sociogram"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: List<Widget>.generate(3, (int index) => const PostCard(), growable: false),
-        ),
-      ),
-    );
-  }
-
-  Widget lockScreen(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var sizePainter = Size.square(width);
-
+    var _width = MediaQuery.of(context).size.width;
+    var _sizePainter = Size.square(_width);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Container(
-            margin: const EdgeInsets.all(4),
+            margin: EdgeInsets.all(4),
             decoration: BoxDecoration(
                 color: Colors.white24,
                 borderRadius: BorderRadius.circular(12)),
             child: GestureDetector(
-              onPanStart: _onPanStart,
-              onPanUpdate: _onPanUpdate,
-              onPanEnd: _onPanEnd,
               child: CustomPaint(
                 painter: _LockScreenPainter(
                     codes: codes, offset: offset, onSelect: _onSelect
                 ),
-                size: sizePainter,
+                size: _sizePainter,
               ),
+              onPanStart: _onPanStart,
+              onPanUpdate: _onPanUpdate,
+              onPanEnd: _onPanEnd,
             ),
           ),
           Text(
-            somethingWentWrong ? 'Something went wrong! Try again later!' : (wrongCode ? 'Wrong Code' : codes.join(" ")),
-            style: TextStyle(color: Colors.white, fontSize: somethingWentWrong ? 12 : 24),
+            codes.join(" "),
+            style: TextStyle(color: Colors.white, fontSize: 24),
           ),
+          ElevatedButton(child: Text("CLEAR CODE"), onPressed: _clearCodes)
         ],
       ),
     );
@@ -112,41 +52,15 @@ class _SocioScreenState extends State<SocioScreen> {
   _onPanUpdate(DragUpdateDetails event) =>
       setState(() => offset = event.localPosition);
 
-  _onPanEnd(DragEndDetails event) => _clearCodes();
+  _onPanEnd(DragEndDetails event) => setState(() => offset = Offset.zero);
 
   _onSelect(int code) {
-    if (wrongCode == true) return;
-    if (somethingWentWrong == true) return;
-
     if (codes.isEmpty || codes.last != code) {
       codes.add(code);
-
-      if (codes.length == 4) {
-        if (!ghostRevealed) {
-          somethingWentWrong = true;
-          codes = [];
-          offset = Offset.zero;
-        }
-        else if (const ListEquality().equals(codes, secretCodes)) {
-          SharedPreferences.getInstance().then((prefs) {
-            prefs.setBool(unlockedSociogramPref, true);
-            setState(() {
-              setGhostRevealed();
-            });
-          });
-        }
-        else {
-          wrongCode = true;
-          codes = [];
-          offset = Offset.zero;
-        }
-      }
     }
   }
 
   _clearCodes() => setState(() {
-    wrongCode = false;
-    somethingWentWrong = false;
     codes = [];
     offset = Offset.zero;
   });

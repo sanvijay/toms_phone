@@ -95,12 +95,12 @@ class _GameMenuScreenState extends State<GameMenuScreen> {
                   onTap: () {
                     Navigator.of(context).push(_createRoute(const AboutTheGameScreen()));
                   },
-                  icons: Icons.warning_rounded,
+                  icons: Icons.info,
                   iconStyle: IconStyle(
                     backgroundColor: Colors.green,
                   ),
                   title: 'About the Game',
-                  subtitle: "Learn more • Disclaimer",
+                  subtitle: "Learn more • Data Usage",
                 ),
                 SettingsItem(
                   onTap: () {
@@ -313,7 +313,7 @@ Max's Phone is a unique game that emulates a mobile phone interface to provide p
             SizedBox(height: 16.0,),
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Text('Disclaimer', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+              child: Text('Data Usage', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8),
@@ -390,6 +390,16 @@ class CreditsScreen extends StatelessWidget {
               ),
               title: 'Calculator',
               subtitle: "https://github.com/Wahid551/flutter_cal",
+            ),
+            creditSection(
+              icons: Icons.calculate,
+              iconStyle: IconStyle(
+                iconsColor: Colors.white,
+                withBackground: true,
+                backgroundColor: Colors.red,
+              ),
+              title: 'Phone lock pattern',
+              subtitle: "https://github.com/baothg/pattern_lock_screen_flutter",
             ),
             // creditSection(
             //   icons: Icons.calendar_month,

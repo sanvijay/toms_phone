@@ -4,3 +4,4 @@ const String gameRunTimePref = 'gameRunTime';
 const String gameStartedBoolPref = 'gameStarted';
 const String triggerCallFromEdgarPref = 'triggerCallFromEdgar';
 const String ghostRevealedPref = 'ghostRevealed';
+const String unlockedSociogramPref = 'unlockedSociogram';

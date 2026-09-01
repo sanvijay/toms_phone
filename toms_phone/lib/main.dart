@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:maxs_phone/pages/ghost_revealing_screen.dart';
+import 'package:maxs_phone/pages/lock_pattern_screen.dart';
 import 'package:maxs_phone/pages/phone_incoming_screen.dart';
 import 'package:maxs_phone/services/isar_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -137,6 +138,7 @@ class _ChatterAppState extends State<ChatterApp> with WidgetsBindingObserver {
         '/gallery': (context) => GalleryScreen(),
         '/calendar': (context) => CalendarScreen(),
         '/clock': (context) => ClockScreen(),
+        '/lock': (context) => LockPatternScreen(),
       },
     );
   }
